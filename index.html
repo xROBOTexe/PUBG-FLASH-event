@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#3fc0f2">
+<title>PUBG MOBILE FLASH CÉLÉBRATION – Invitation</title>
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--sky:#3fc0f2;--sky2:#8fdcfb;--sky3:#d9f3fd;--navy:#16253f;--ink:#16253f;--mute:#5d6b80;--line:#d5e6f0;--white:#fff;--ok:#12a150;--bad:#e5383b;--warn:#f0a500;
+    --disp:'Hard Race','Racing Sans One',Impact,sans-serif;--body:Outfit,system-ui,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--body);color:var(--ink);min-height:100vh;
+    background:linear-gradient(180deg,#e9f8ff 0%,#bfe9fc 45%,#5ccaf4 100%) fixed}
+  header{position:sticky;top:0;z-index:5;background:#fff;box-shadow:0 2px 14px rgba(22,37,63,.10);padding:10px 14px}
+  header h1{font-family:var(--disp);font-weight:900;font-style:italic;font-size:min(26px,5.6vw);line-height:1;margin:0;letter-spacing:.5px;text-transform:uppercase;color:var(--navy)}
+  header h1 b{color:var(--sky)}
+  .tabs{display:flex;gap:6px;margin-top:9px}
+  .tabs button{flex:1;padding:9px 4px;border:0;border-radius:999px;background:#eef6fb;color:var(--mute);font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+  .tabs button.on{background:var(--navy);color:#fff}
+  main{max-width:640px;margin:0 auto;padding:14px}
+  .card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 28px rgba(22,37,63,.10)}
+  .card h2{font-family:var(--body);font-weight:800;font-size:18px;letter-spacing:.4px;text-transform:uppercase;margin:0 0 6px;color:var(--navy)}
+  label{display:block;font-size:12px;font-weight:700;color:var(--mute);margin:12px 0 5px;text-transform:uppercase;letter-spacing:1.2px}
+  input{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-weight:600;font-size:17px;outline:none}
+  input:focus{border-color:var(--sky);background:#fff}
+  input::placeholder{color:#9aa9ba;font-weight:500}
+  input[type=checkbox]{width:auto}
+  .row{display:flex;gap:8px}.row>*{flex:1}
+  .btn{display:inline-block;padding:13px 16px;border:0;border-radius:12px;background:var(--sky);color:#fff;font-family:var(--body);font-weight:800;font-size:16px;letter-spacing:.8px;text-transform:uppercase;cursor:pointer;text-align:center;box-shadow:0 6px 16px rgba(63,192,242,.35)}
+  .btn:active{transform:translateY(1px)}
+  .btn.sec{background:var(--navy);color:#fff;box-shadow:none}
+  .btn.ghost{background:#eef6fb;color:var(--navy);box-shadow:none}
+  .btn.red{background:#fdecec;color:var(--bad);box-shadow:none}
+  .btn.wide{width:100%;margin-top:16px}
+  .muted{color:var(--mute);font-size:14px}
+  .stats{display:flex;gap:8px;margin-bottom:10px}
+  .stat{flex:1;background:var(--sky3);border-radius:12px;padding:8px;text-align:center}
+  .stat b{display:block;font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;color:var(--navy)}
+  .guest{display:flex;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+  .guest:first-child{border-top:0}
+  .guest .who{flex:1;min-width:0}
+  .guest .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+  .pill{font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.8px}
+  .p-approved{background:#e3f7ec;color:var(--ok)}.p-rejected{background:#fdecec;color:var(--bad)}
+  .in{font-size:12px;color:var(--ok);font-weight:700}
+  .guest .act{display:flex;gap:6px}
+  .guest .act button{padding:7px 10px;font-size:12px}
+  .inv{text-align:center}
+  .inv img{max-width:100%;border-radius:14px;box-shadow:0 10px 30px rgba(22,37,63,.18)}
+  .hidden{display:none!important}
+  #video{width:100%;border-radius:14px;background:#000;aspect-ratio:1/1;object-fit:cover}
+  .result{border-radius:18px;padding:22px 16px;text-align:center;color:#fff;margin-bottom:14px;box-shadow:0 10px 26px rgba(22,37,63,.18)}
+  .result .big{font-family:var(--disp);font-weight:400;font-size:50px;line-height:1;letter-spacing:1px}
+  .result .nm{font-weight:800;font-size:22px;margin-top:8px}
+  .result .cin{font-size:15px;opacity:.9}
+  .result .why{font-size:15px;margin-top:8px}
+  .result .btn{margin-top:12px;background:#fff;color:var(--navy);box-shadow:none}
+  .r-ok{background:var(--ok)}.r-bad{background:var(--bad)}.r-warn{background:var(--warn);color:var(--navy)}
+  .note{background:#fff;border-left:4px solid var(--warn);border-radius:10px;padding:10px;font-size:14px;margin-bottom:12px}
+  /* hero in the poster style */
+  .hero{position:relative;overflow:hidden;text-align:center;padding:30px 16px 22px;color:var(--navy);
+    background:linear-gradient(160deg,#ffffff 0%,#d7f2fd 40%,#7fd6f8 100%)}
+  .hero::before,.hero::after{content:"";position:absolute;pointer-events:none;background-repeat:no-repeat;background-size:100% 100%}
+  .hero::before{inset:auto -10% -6% -10%;height:70%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 200' preserveAspectRatio='none'%3E%3Cpath d='M0 120 L120 95 L70 120 L230 80 L170 112 L400 40 L400 200 L0 200Z' fill='%233fc0f2' opacity='.55'/%3E%3Cpath d='M0 160 L150 128 L100 152 L290 108 L230 140 L400 96 L400 200 L0 200Z' fill='%233fc0f2'/%3E%3Cpath d='M0 150 L140 126 L95 146 L260 112' stroke='%23fff' stroke-width='5' fill='none' stroke-linejoin='miter'/%3E%3C/svg%3E")}
+  .hero::after{top:-8%;right:-14%;width:60%;height:70%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M200 0 L200 140 L150 90 L170 150 L100 60 L120 110 L40 0Z' fill='%23fff' opacity='.9'/%3E%3C/svg%3E")}
+  .hero>*{position:relative;z-index:1}
+  .hero .t1{font-family:var(--disp);font-weight:400;font-size:min(44px,10vw);line-height:.9;text-transform:uppercase;color:var(--navy);letter-spacing:.5px}
+  .hero .t2{font-family:var(--disp);font-weight:400;font-size:min(108px,22vw);line-height:.82;text-transform:uppercase;color:var(--sky);letter-spacing:1px;
+    text-shadow:4px 4px 0 var(--navy);-webkit-text-stroke:2px #fff;paint-order:stroke fill}
+  .hero .ribbon{display:inline-block;margin-top:12px;background:var(--sky);color:#fff;font-family:var(--body);font-style:italic;font-weight:700;font-size:15px;letter-spacing:5px;text-transform:uppercase;padding:6px 18px 6px 22px;transform:skewX(-14deg);box-shadow:4px 4px 0 var(--navy)}
+  .hero .ribbon span{display:inline-block;transform:skewX(14deg)}
+  .hero .meta{margin-top:18px;display:inline-block;background:#fff;border-radius:12px;padding:10px 16px;font-weight:700;font-size:15px;color:var(--navy);box-shadow:0 6px 18px rgba(22,37,63,.12)}
+  .hero .meta .d{color:var(--sky);font-weight:800}
+  .hero .map{display:inline-block;margin-top:10px;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--navy);text-decoration:none;border-bottom:2px solid var(--navy)}
+  .foot{text-align:center;margin:20px 0}
+  .foot a{color:var(--navy);opacity:.6;font-size:13px}
+  .share{background:#fff;border-left:4px solid var(--sky);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:14px}
+  .pop{position:fixed;inset:0;z-index:30;background:rgba(22,37,63,.6);display:flex;align-items:center;justify-content:center;padding:18px}
+  .pop .box{width:100%;max-width:360px;text-align:center;background:#fff;border-radius:20px;padding:26px 20px 20px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+  .pop .x{position:absolute;right:10px;top:6px;background:none;border:0;color:var(--mute);font-size:28px;cursor:pointer}
+  .pop .ig{width:64px;height:64px;margin:0 auto 12px;border-radius:18px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);display:flex;align-items:center;justify-content:center}
+  .pop h3{font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;margin:0 0 6px;color:var(--navy)}
+  .pop h3 b{color:var(--sky)}
+  .pop .btn{width:100%;margin-top:16px;text-decoration:none}
+  .seg{display:flex;gap:6px;margin-bottom:10px}
+  .seg button{flex:1}
+  .who-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--mute);margin-top:8px}
+  .who-bar b{color:var(--navy)}
+  .linkbtn{background:none;border:0;color:var(--navy);font-weight:700;text-decoration:underline;cursor:pointer;font-family:var(--body);font-size:13px;padding:0}
+  select{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-weight:600;font-size:16px}
+</style>
+</head>
+<body>
+<header>
+  <h1 id="evTitle"></h1>
+  <div class="tabs hidden" id="tabs">
+    <button data-v="scan" onclick="go('scan')">Scan</button>
+    <button data-v="guests" onclick="go('guests')">Guests</button>
+    <button data-v="team" onclick="go('team')" id="tabTeam">Staff</button>
+  </div>
+  <div class="who-bar hidden" id="whoBar"><span>Signed in: <b id="whoName"></b> <span id="whoRole"></span></span><button class="linkbtn" onclick="logout()">Log out</button></div>
+</header>
+
+<main>
+  <div id="note" class="note hidden"></div>
+
+  <!-- PLAYER: create own invitation (public) -->
+  <section id="v-invite" class="hidden">
+    <div class="card hero">
+      <div class="t1" id="gT1"></div>
+      <div class="t2" id="gT2"></div>
+      <div class="ribbon" id="gRib"><span id="gT3"></span></div><br>
+      <div class="meta" id="gMeta"></div><br>
+      <a class="map" id="mapLink" target="_blank" rel="noopener">Open in Google Maps</a>
+    </div>
+    <div class="card" id="gForm">
+      <h2>Get your invitation QR</h2>
+      <label for="iName">Full name (as on your CIN)</label><input id="iName" placeholder="Full name" autocomplete="name">
+      <label for="iCin">CIN</label><input id="iCin" placeholder="e.g. AB123456" autocomplete="off" style="text-transform:uppercase">
+      <button class="btn wide" onclick="makeMyInvite()">Create my QR invitation</button>
+      <div id="iMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+    <div class="card hidden" id="gResult">
+      <div class="inv" id="myInv"></div>
+      <p class="muted" style="text-align:center">Save this image and show it at the entrance with your CIN card.</p>
+      <div class="row">
+        <button class="btn" onclick="saveCard()">Download</button>
+        <button class="btn sec hidden" id="shareBtn" onclick="shareCard()">Share</button>
+      </div>
+      <button class="btn ghost wide" onclick="resetInvite()">New invitation</button>
+    </div>
+    <div class="foot"><a href="#staff">Staff login</a></div>
+  </section>
+
+  <!-- STAFF LOGIN -->
+  <section id="v-login" class="hidden">
+    <div class="card">
+      <h2>Staff login</h2>
+      <label for="lName">Full name</label><input id="lName" placeholder="Your full name" autocomplete="username">
+      <label for="lPass">Password</label><input id="lPass" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
+      <button class="btn wide" onclick="login()">Log in</button>
+      <div id="lMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+    <div class="foot"><a href="#">Back to invitation page</a></div>
+  </section>
+
+  <!-- FIRST SETUP: create organizer account (works only once) -->
+  <section id="v-setup" class="hidden">
+    <div class="card">
+      <h2>Create organizer account</h2>
+      <p class="muted">Do this once, right after setup. It only works while there is no staff yet.</p>
+      <label for="sName">Your full name</label><input id="sName" placeholder="Full name">
+      <label for="sPass">Choose a password (8+ characters)</label><input id="sPass" type="password" autocomplete="new-password">
+      <button class="btn wide" onclick="setupAdmin()">Create organizer</button>
+      <div id="sMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+  </section>
+
+  <!-- STAFF: scan -->
+  <section id="v-scan" class="hidden">
+    <div id="resultBox"></div>
+    <div class="card">
+      <h2>Scan guest QR</h2>
+      <video id="video" class="hidden" playsinline muted></video>
+      <canvas id="scanCanvas" class="hidden"></canvas>
+      <div class="row">
+        <button class="btn" id="liveBtn" onclick="toggleLive()">Start camera</button>
+        <button class="btn sec" onclick="document.getElementById('photoIn').click()">Photo scan</button>
+      </div>
+      <input type="file" id="photoIn" accept="image/*" capture="environment" class="hidden" onchange="scanPhoto(this)">
+      <p class="muted" id="scanHint">Point the camera at the guest's QR. If the camera is blocked, use Photo scan.</p>
+    </div>
+    <div class="card">
+      <h2>Check by CIN</h2>
+      <div class="row"><input id="manCin" placeholder="CIN" style="text-transform:uppercase"><button class="btn ghost" style="flex:0 0 auto" onclick="manualCheck()">Check</button></div>
+    </div>
+  </section>
+
+  <!-- STAFF: guest list -->
+  <section id="v-guests" class="hidden">
+    <div class="card">
+      <h2>Approve a guest</h2>
+      <div class="row">
+        <div><label for="aName">Full name</label><input id="aName" placeholder="Full name" autocomplete="off"></div>
+        <div><label for="aCin">CIN</label><input id="aCin" placeholder="AB123456" autocomplete="off" style="text-transform:uppercase"></div>
+      </div>
+      <button class="btn wide" onclick="addApproved()">Approve</button>
+      <div id="aMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <h2>Guest list</h2>
+      <div class="stats">
+        <div class="stat"><b id="sApp">0</b><span class="muted">Approved</span></div>
+        <div class="stat"><b id="sIn">0</b><span class="muted">Entered</span></div>
+        <div class="stat"><b id="sRej">0</b><span class="muted">Revoked</span></div>
+      </div>
+      <input id="search" placeholder="Search name or CIN" oninput="renderList()">
+      <div id="list" style="margin-top:8px"><div class="muted">Loading…</div></div>
+    </div>
+  </section>
+
+  <!-- ADMIN: staff accounts -->
+  <section id="v-team" class="hidden">
+    <div class="card">
+      <h2>Add staff</h2>
+      <label for="tName">Full name (this is their login name)</label><input id="tName" placeholder="Full name" autocomplete="off">
+      <label for="tPass">Password for them (8+ characters)</label><input id="tPass" placeholder="Password" autocomplete="off">
+      <label for="tRole">Role</label>
+      <select id="tRole"><option value="staff">Staff — scan and approve guests</option><option value="admin">Organizer — also manages staff</option></select>
+      <button class="btn wide" onclick="addStaff()">Create staff account</button>
+      <div id="tMsg" class="muted" style="margin-top:8px"></div>
+    </div>
+    <div class="card">
+      <h2>Staff accounts</h2>
+      <div id="teamList"><div class="muted">Loading…</div></div>
+    </div>
+  </section>
+</main>
+
+<div class="pop hidden" id="igPop" onclick="if(event.target===this)closeIg()">
+  <div class="box">
+    <button class="x" onclick="closeIg()" aria-label="Close">×</button>
+    <div class="ig"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg></div>
+    <h3>FOLLOW US ON <b>INSTAGRAM</b></h3>
+    <div class="muted">Live updates, results and photos from the event.</div>
+    <a class="btn" id="igLink" href="#" target="_blank" rel="noopener" onclick="closeIg()">Open Instagram</a>
+    <div class="muted" id="igHandle" style="margin-top:8px"></div>
+  </div>
+</div>
+
+<script>
+/* =================== SETTINGS — edit these =================== */
+const SUPABASE_URL      = 'https://fwfqfjoklycsjxiizbye.supabase.co';       // e.g. https://abcd1234.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZnFmam9rbHljc2p4aWl6YnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwNzk0NjcsImV4cCI6MjExMDY1NTQ2N30.pT84RabinhSzxZoVN1u8gs9SX5BtkdvQv1PEoZ4xtho';  // Project Settings > API > anon public key
+const INSTAGRAM_URL     = '';                               // e.g. https://www.instagram.com/yourpage
+const EVENT = {
+  name:  'PUBG MOBILE FLASH CÉLÉBRATION',
+  date:  'Sunday 22 Nov 2026 · 10:00 – 18:00',
+  place: 'PlayerZ Gaming Arena (near Wydad Store), Casablanca',
+  map:   'https://www.google.com/maps/search/?api=1&query=PlayerZ+Gaming+Arena+Casablanca'
+};
+const LOGIN_DOMAIN = 'staff.pmmc-flash.app';  // internal only: turns "Full Name" into a login id
+/* ============================================================= */
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const normCin=s=>String(s||'').toUpperCase().replace(/[^A-Z0-9]/g,'');
+const cleanName=s=>String(s||'').trim().replace(/\s+/g,' ');
+const normName=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9؀-ۿ]+/g,' ').trim();
+const userSlug=s=>String(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.+|\.+$/g,'');
+const loginEmail=name=>userSlug(name)+'@'+LOGIN_DOMAIN;
+const fmtTime=ts=>ts?new Date(ts).toLocaleString([], {hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'}):'';
+function flash(id,m){$(id).textContent=m;clearTimeout(flash[id]);flash[id]=setTimeout(()=>$(id).textContent='',6000)}
+function note(m){$('note').textContent=m||'';$('note').classList.toggle('hidden',!m)}
+
+const configured=!SUPABASE_URL.startsWith('PASTE');
+const sb=(configured&&window.supabase)?supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY):null;
+let me=null;          // {user_id, username, display_name, role}
+let guests={};
+let pollTimer=null;
+
+/* =================== event header =================== */
+function splitName(n){const w=(n||'EVENT').toUpperCase().split(' ');return [w.slice(0,2).join(' '),w[2]||'',w.slice(3).join(' ')]}
+function applyEvent(){
+  const [a1,a2,a3]=splitName(EVENT.name);
+  $('evTitle').innerHTML=esc(a1)+(a2?' <b>'+esc(a2)+'</b>':'')+(a3?' '+esc(a3):'');
+  $('gT1').textContent=a1;$('gT2').textContent=a2;$('gT3').textContent=a3;$('gRib').classList.toggle('hidden',!a3);
+  $('gMeta').innerHTML='<span class="d">'+esc(EVENT.date)+'</span><br>'+esc(EVENT.place);
+  $('mapLink').href=EVENT.map;
+  document.title=EVENT.name+' – Invitation';
+}
+
+/* =================== routing =================== */
+const STAFF_VIEWS=['scan','guests','team'];
+function go(v){location.hash=v}
+window.addEventListener('hashchange',route);
+function route(){
+  let h=(location.hash||'').slice(1);
+  let v='invite';
+  if(h==='setup') v='setup';
+  else if(h==='staff'||STAFF_VIEWS.includes(h)){
+    if(!me) v='login';
+    else v=STAFF_VIEWS.includes(h)?h:'scan';
+    if(v==='team'&&me&&me.role!=='admin') v='scan';
+  }
+  ['invite','login','setup','scan','guests','team'].forEach(x=>$('v-'+x).classList.toggle('hidden',x!==v));
+  const staffMode=!!me&&STAFF_VIEWS.includes(v);
+  $('tabs').classList.toggle('hidden',!staffMode);
+  $('whoBar').classList.toggle('hidden',!staffMode);
+  $('tabTeam').classList.toggle('hidden',!(me&&me.role==='admin'));
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  if(v!=='invite')closeIg();
+  if(v!=='scan')stopLive();
+  if(v==='guests')loadGuests();
+  if(v==='team')loadTeam();
+  if(v==='scan'&&!stream&&canLive())toggleLive();
+  clearInterval(pollTimer);
+  if(v==='guests')pollTimer=setInterval(loadGuests,10000);
+  if((v==='login'||v==='setup'||staffMode)&&!sb)note('Website not connected yet: paste the Supabase URL and key in the settings at the top of index.html.');
+  else note('');
+}
+
+/* =================== auth =================== */
+async function loadMe(){
+  me=null;
+  if(!sb)return;
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session)return;
+  const {data}=await sb.from('staff').select('user_id,username,display_name,role').eq('user_id',session.user.id).maybeSingle();
+  if(data){me=data;$('whoName').textContent=data.display_name;$('whoRole').textContent=data.role==='admin'?'(organizer)':'(staff)'}
+}
+async function login(){
+  if(!sb){flash('lMsg','Website not connected yet.');return}
+  const name=cleanName($('lName').value), pass=$('lPass').value;
+  if(!name||!pass){flash('lMsg','Enter your full name and password.');return}
+  flash('lMsg','Logging in…');
+  const {error}=await sb.auth.signInWithPassword({email:loginEmail(name),password:pass});
+  if(error){flash('lMsg','Wrong name or password.');return}
+  await loadMe();
+  if(!me){await sb.auth.signOut();flash('lMsg','This account is not staff. Ask the organizer.');return}
+  $('lPass').value='';
+  go('scan');route();
+}
+async function logout(){stopLive();if(sb)await sb.auth.signOut();me=null;location.hash='staff';route()}
+async function setupAdmin(){
+  if(!sb){flash('sMsg','Website not connected yet.');return}
+  const name=cleanName($('sName').value), pass=$('sPass').value;
+  if(name.length<3||pass.length<8){flash('sMsg','Enter your full name and a password of 8+ characters.');return}
+  flash('sMsg','Creating…');
+  let {data,error}=await sb.auth.signUp({email:loginEmail(name),password:pass});
+  if(error&&/registered|exists/i.test(error.message)){({data,error}=await sb.auth.signInWithPassword({email:loginEmail(name),password:pass}))}
+  if(error){flash('sMsg','Could not create: '+error.message);return}
+  if(!data.session){flash('sMsg','Account created but not active: in Supabase turn OFF "Confirm email" (Authentication > Sign In / Providers > Email), then try again.');return}
+  const {data:ok,error:e2}=await sb.rpc('claim_first_admin',{p_username:userSlug(name),p_display:name});
+  if(e2||!ok){await sb.auth.signOut();flash('sMsg','An organizer already exists. Log in from the staff page instead.');return}
+  await loadMe();$('sPass').value='';go('team');route();
+}
+
+/* =================== staff accounts (organizer) =================== */
+async function addStaff(){
+  const name=cleanName($('tName').value), pass=$('tPass').value, role=$('tRole').value;
+  if(name.length<3||pass.length<8){flash('tMsg','Enter a full name and a password of 8+ characters.');return}
+  flash('tMsg','Creating…');
+  // a separate client so the organizer stays logged in
+  const tmp=supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{auth:{persistSession:false,autoRefreshToken:false,storageKey:'sb-tmp-'+Date.now()}});
+  const {data,error}=await tmp.auth.signUp({email:loginEmail(name),password:pass});
+  if(error){flash('tMsg',/registered|exists/i.test(error.message)?'This name already has an account.':'Could not create: '+error.message);return}
+  if(!data.user||(data.user.identities&&data.user.identities.length===0)){flash('tMsg','This name already has an account.');return}
+  const {error:e2}=await sb.from('staff').insert({user_id:data.user.id,username:userSlug(name),display_name:name,role});
+  if(e2){flash('tMsg','Account made but not added to staff: '+e2.message);return}
+  $('tName').value='';$('tPass').value='';
+  flash('tMsg','Done. Send them: name "'+name+'" and their password.');
+  loadTeam();
+}
+async function loadTeam(){
+  if(!sb||!me)return;
+  const {data,error}=await sb.from('staff').select('*').order('created_at');
+  if(error){$('teamList').innerHTML='<div class="muted">Could not load staff.</div>';return}
+  $('teamList').innerHTML=data.map(s=>`<div class="guest"><div class="who"><b>${esc(s.display_name)}</b><span class="muted">${s.role==='admin'?'Organizer':'Staff'}</span></div>
+    ${s.user_id===me.user_id?'<span class="pill p-approved">you</span>':`<div class="act"><button class="btn red" onclick="removeStaff('${esc(s.user_id)}',this)">Remove</button></div>`}</div>`).join('')||'<div class="muted">No staff yet.</div>';
+}
+async function removeStaff(id,btn){
+  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='Remove'},3500);return}
+  const {error}=await sb.from('staff').delete().eq('user_id',id);
+  if(error)flash('tMsg','Could not remove: '+error.message);
+  loadTeam();
+}
+
+/* =================== guests (staff) =================== */
+async function loadGuests(){
+  if(!sb||!me)return;
+  const {data,error}=await sb.from('guests').select('*').order('created_at',{ascending:false}).limit(2000);
+  if(error){$('list').innerHTML='<div class="muted">Could not load the list. Check your connection.</div>';return}
+  guests={};data.forEach(g=>guests[g.cin]=g);renderList();
+}
+function renderList(){
+  const all=Object.values(guests);
+  $('sApp').textContent=all.filter(g=>g.status==='approved').length;
+  $('sIn').textContent=all.filter(g=>g.checked_in).length;
+  $('sRej').textContent=all.filter(g=>g.status!=='approved').length;
+  const q=($('search').value||'').trim().toLowerCase();
+  const rows=all.filter(g=>!q||g.name.toLowerCase().includes(q)||g.cin.toLowerCase().includes(q));
+  if(!rows.length){$('list').innerHTML='<div class="muted">'+(all.length?'No match.':'No approved guests yet.')+'</div>';return}
+  $('list').innerHTML=rows.map(g=>{const c=esc(g.cin);return `<div class="guest">
+    <div class="who"><b>${esc(g.name)}</b><span class="muted">${c}</span>${g.checked_in?`<div class="in">Entered ${esc(fmtTime(g.checked_in_at))}${g.checked_in_by?' · '+esc(g.checked_in_by):''}</div>`:''}</div>
+    <span class="pill p-${g.status==='approved'?'approved':'rejected'}">${g.status}</span>
+    <div class="act">
+      ${g.status==='approved'?`<button class="btn ghost" onclick="setStatus('${c}','revoked')">Revoke</button>`:`<button class="btn ghost" onclick="setStatus('${c}','approved')">Approve</button>`}
+      ${g.checked_in?`<button class="btn ghost" title="Undo entry" onclick="resetEntry('${c}')">Undo</button>`:''}
+      <button class="btn red" onclick="delGuest('${c}',this)">✕</button>
+    </div></div>`}).join('');
+}
+async function addApproved(){
+  const name=cleanName($('aName').value), cin=normCin($('aCin').value);
+  if(name.length<2||cin.length<4||cin.length>12){flash('aMsg','Enter full name and a valid CIN.');return}
+  const {error}=await sb.from('guests').upsert({cin,name,status:'approved'},{onConflict:'cin'});
+  if(error){flash('aMsg','Could not save: '+error.message);return}
+  $('aName').value='';$('aCin').value='';flash('aMsg','Approved: '+name);loadGuests();
+}
+async function setStatus(cin,status){await sb.from('guests').update({status}).eq('cin',cin);loadGuests()}
+async function resetEntry(cin){await sb.from('guests').update({checked_in:false,checked_in_at:null,checked_in_by:null}).eq('cin',cin);loadGuests()}
+async function delGuest(cin,btn){
+  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='✕'},3500);return}
+  await sb.from('guests').delete().eq('cin',cin);loadGuests();
+}
+
+/* =================== player invitation =================== */
+let myCard=null;
+async function makeMyInvite(){
+  const name=cleanName($('iName').value), cin=normCin($('iCin').value);
+  if(name.length<3){flash('iMsg','Enter your full name.');return}
+  if(cin.length<4||cin.length>12){flash('iMsg','Enter a valid CIN (letters and numbers).');return}
+  try{await Promise.race([Promise.all([document.fonts.load('400 80px "Racing Sans One"'),document.fonts.load('700 30px Outfit')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
+  myCard=makeCard({name,cin});
+  const img=new Image();img.src=myCard.toDataURL('image/png');img.alt='Invitation QR for '+name;
+  $('myInv').innerHTML='';$('myInv').appendChild(img);
+  $('gForm').classList.add('hidden');$('gResult').classList.remove('hidden');
+  $('shareBtn').classList.toggle('hidden',!(navigator.canShare));
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(openIg,1200);
+}
+function resetInvite(){$('gResult').classList.add('hidden');$('gForm').classList.remove('hidden');$('iName').value='';$('iCin').value=''}
+function cardBlob(){return new Promise(r=>myCard.toBlob(r,'image/png'))}
+async function saveCard(){
+  if(!myCard)return;
+  const url=URL.createObjectURL(await cardBlob()), a=document.createElement('a');
+  a.href=url;a.download='flash-invitation.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+}
+async function shareCard(){
+  try{const f=new File([await cardBlob()],'flash-invitation.png',{type:'image/png'});
+    if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:EVENT.name});else saveCard()}catch(e){}
+}
+
+const DISP='"Hard Race","Racing Sans One", Impact, sans-serif', BODY='Outfit, system-ui, sans-serif', SKY='#3fc0f2', NAVY='#16253f';
+function makeCard(g){
+  const qr=qrcode(0,'M'); qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8']; qr.addData(['INV2',g.cin,g.name].join('|')); qr.make();
+  const n=qr.getModuleCount(), W=1080, H=1440, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
+  const x=cv.getContext('2d');
+  x.fillStyle='#fff';x.fillRect(0,0,W,H);
+  x.fillStyle=SKY;x.fillRect(0,0,W,250);
+  x.textAlign='center';x.fillStyle='#fff';
+  fitText(x,EVENT.name.toUpperCase(),W/2,150,W-100,92,'400',DISP);
+  x.font=`700 30px ${BODY}`;x.fillStyle=NAVY;x.fillText('INVITATION',W/2,210);
+  const cell=Math.floor(700/(n+8)), qs=cell*(n+8), ox=(W-qs)/2, oy=300;
+  x.fillStyle='#000';for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(qr.isDark(r,c))x.fillRect(ox+(c+4)*cell,oy+(r+4)*cell,cell,cell);
+  let y=oy+qs+70;
+  x.fillStyle=NAVY;fitText(x,g.name.toUpperCase(),W/2,y,W-120,64,'400',DISP);
+  y+=52;x.fillStyle='#5d6b80';x.font=`600 32px ${BODY}`;x.fillText('CIN  '+g.cin,W/2,y);
+  y+=60;x.fillStyle=NAVY;fitText(x,EVENT.date,W/2,y,W-120,34,'700',BODY);
+  y+=46;x.fillStyle='#5d6b80';fitText(x,EVENT.place,W/2,y,W-120,28,'500',BODY);
+  x.fillStyle=SKY;x.fillRect(0,H-18,W,18);
+  return cv;
+}
+function fitText(x,t,cx,y,maxW,start,weight,fam){let s=start;do{x.font=`${weight} ${s}px ${fam}`;s-=2}while(x.measureText(t).width>maxW&&s>18);x.fillText(t,cx,y)}
+
+/* =================== instagram popup =================== */
+function openIg(){ if(!INSTAGRAM_URL)return; $('igLink').href=INSTAGRAM_URL; $('igHandle').textContent=INSTAGRAM_URL.replace(/^https?:\/\/(www\.)?instagram\.com\//,'@').replace(/[/?].*$/,''); $('igPop').classList.remove('hidden') }
+function closeIg(){ $('igPop').classList.add('hidden') }
+
+/* =================== scanning =================== */
+let stream=null, rafId=null, lastHit={t:0,v:''}, lastScan=null, busy=false;
+const canLive=()=>!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
+async function toggleLive(){
+  if(stream){stopLive();return}
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+    const v=$('video');v.srcObject=stream;v.classList.remove('hidden');await v.play();
+    $('liveBtn').textContent='Stop camera';loop();
+  }catch(e){stream=null;$('scanHint').innerHTML='<b>Camera not allowed.</b> Allow camera access in the browser, or use Photo scan.'}
+}
+function stopLive(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}cancelAnimationFrame(rafId);$('video').classList.add('hidden');$('liveBtn').textContent='Start camera'}
+function loop(){
+  if(!stream)return;
+  const v=$('video'),c=$('scanCanvas');
+  if(v.readyState>=2&&!busy){
+    const w=640,h=Math.round(v.videoHeight/v.videoWidth*640)||640;c.width=w;c.height=h;
+    const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(v,0,0,w,h);
+    const code=jsQR(x.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'dontInvert'});
+    if(code&&code.data){const now=Date.now();if(code.data!==lastHit.v||now-lastHit.t>4000){lastHit={t:now,v:code.data};handleCode(code.data)}}
+  }
+  rafId=requestAnimationFrame(loop);
+}
+function scanPhoto(inp){
+  const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
+  const img=new Image(),url=URL.createObjectURL(f);
+  img.onload=()=>{
+    let found=null;
+    for(const max of [1000,1600,600]){
+      const s=Math.min(1,max/Math.max(img.width,img.height)),w=Math.round(img.width*s),h=Math.round(img.height*s);
+      const c=$('scanCanvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(img,0,0,w,h);
+      const code=jsQR(x.getImageData(0,0,w,h).data,w,h,{inversionAttempts:'attemptBoth'});
+      if(code&&code.data){found=code.data;break}
+    }
+    URL.revokeObjectURL(url);
+    if(found)handleCode(found);else showResult('warn','NO QR FOUND','','','Get closer and keep the whole code in the photo.');
+  };
+  img.src=url;
+}
+function beep(ok){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=ok?880:220;o.connect(g);g.connect(a.destination);g.gain.value=.15;o.start();o.stop(a.currentTime+(ok?.15:.4))}catch(e){}try{navigator.vibrate&&navigator.vibrate(ok?80:[100,60,100])}catch(e){}}
+function handleCode(text){
+  const p=String(text).split('|');
+  if(!/^INV[12]$/.test(p[0])||p.length<3){beep(false);return showResult('bad','INVALID QR','','','This is not an invitation for this event.')}
+  verify(normCin(p[1]),p[2]);
+}
+function manualCheck(){const cin=normCin($('manCin').value);if(!cin)return;$('manCin').value='';verify(cin,null)}
+async function verify(cin,qrName){
+  busy=true;lastScan={cin,name:qrName};
+  try{
+    const {data:g,error}=await sb.from('guests').select('*').eq('cin',cin).maybeSingle();
+    if(error){beep(false);return showResult('warn','OFFLINE','',cin,'Could not reach the guest list. Try again.')}
+    if(!g){beep(false);return showResult('bad','NOT APPROVED',qrName||'',cin,'This CIN is not on the approved list.','approve')}
+    if(g.status!=='approved'){beep(false);return showResult('bad','REVOKED',g.name,cin,'This guest was removed from the list.','approve')}
+    if(qrName&&normName(qrName)!==normName(g.name)){beep(false);return showResult('warn','NAME MISMATCH',g.name,cin,'QR says "'+qrName+'". Check the CIN card first.','enter')}
+    if(g.checked_in){beep(false);return showResult('warn','ALREADY ENTERED',g.name,cin,'Entered '+fmtTime(g.checked_in_at)+(g.checked_in_by?' · by '+g.checked_in_by:'')+'. Check the CIN card.')}
+    beep(true);
+    const {error:e2}=await sb.from('guests').update({checked_in:true,checked_in_at:new Date().toISOString(),checked_in_by:me.display_name}).eq('cin',cin);
+    showResult('ok','APPROVED',g.name,cin,e2?'Approved, but entry was not recorded.':'Welcome! Marked as entered.');
+  }finally{setTimeout(()=>busy=false,1500)}
+}
+function showResult(kind,big,name,cin,why,action){
+  const cls=kind==='ok'?'r-ok':kind==='bad'?'r-bad':'r-warn';
+  let btn='';
+  if(action==='approve'&&name)btn=`<button class="btn" onclick="approveNow()">Approve & let in</button>`;
+  if(action==='enter')btn=`<button class="btn" onclick="enterNow()">CIN checked – let in</button>`;
+  $('resultBox').innerHTML=`<div class="result ${cls}"><div class="big">${esc(big)}</div>
+    ${name?`<div class="nm">${esc(name)}</div>`:''}${cin?`<div class="cin">CIN: ${esc(cin)}</div>`:''}
+    ${why?`<div class="why">${esc(why)}</div>`:''}${btn}</div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function approveNow(){
+  if(!lastScan||!lastScan.name)return;
+  const {cin,name}=lastScan;
+  const {error}=await sb.from('guests').upsert({cin,name,status:'approved',checked_in:true,checked_in_at:new Date().toISOString(),checked_in_by:me.display_name},{onConflict:'cin'});
+  if(error)return showResult('bad','NOT SAVED',name,cin,error.message);
+  beep(true);showResult('ok','APPROVED',name,cin,'Added to the list and marked as entered.');
+}
+async function enterNow(){
+  if(!lastScan)return;
+  await sb.from('guests').update({checked_in:true,checked_in_at:new Date().toISOString(),checked_in_by:me.display_name}).eq('cin',lastScan.cin);
+  beep(true);showResult('ok','ENTERED','',lastScan.cin,'');
+}
+
+/* =================== start =================== */
+(async function(){
+  applyEvent();
+  try{await loadMe()}catch(e){}
+  route();
+  if(sb)sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT'){me=null;route()}});
+})();
+</script>
+</body>
+</html>
