@@ -132,6 +132,11 @@
     </div>
     <div class="card hidden" id="gResult">
       <div class="inv" id="myInv"></div>
+      <div id="igBar" class="hidden" style="margin-top:12px;background:var(--sky3);border-radius:12px;padding:10px 12px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1;font-weight:700;color:var(--navy);font-size:14px">Save your QR now. Opening the event post in <span id="igCount">3</span>…</div>
+        <button class="btn" style="padding:8px 12px;font-size:13px" onclick="igGo()">Open now</button>
+        <button class="btn ghost" style="padding:8px 10px;font-size:13px" onclick="igStop()">Stay</button>
+      </div>
       <p class="muted" style="text-align:center">Save this image and show it at the entrance with your CIN card.</p>
       <div class="row">
         <button class="btn" onclick="saveCard()">Download</button>
@@ -278,7 +283,7 @@
 /* =================== SETTINGS — edit these =================== */
 const SUPABASE_URL      = 'https://fwfqfjoklycsjxiizbye.supabase.co';       // e.g. https://abcd1234.supabase.co
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZnFmam9rbHljc2p4aWl6YnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwNzk0NjcsImV4cCI6MjExMDY1NTQ2N30.pT84RabinhSzxZoVN1u8gs9SX5BtkdvQv1PEoZ4xtho';  // Project Settings > API > anon public key
-const INSTAGRAM_URL     = 'https://www.instagram.com/p/DfqHEh6kUSE/';                               // e.g. https://www.instagram.com/yourpage
+const INSTAGRAM_URL     = 'https://www.instagram.com/p/DfqHEh6kUSE/';  // web link (used if the app is not installed)                               // e.g. https://www.instagram.com/yourpage
 const EVENT = {
   name:  'PUBG MOBILE FLASH CÉLÉBRATION',
   date:  'Sunday 22 Nov 2026 · 10:00 – 18:00',
@@ -534,25 +539,51 @@ async function qrDelete(id,btn){
 
 /* =================== player invitation =================== */
 let myCard=null;
-async function makeMyInvite(){
+// Instagram post to open in the app (media id = the post code converted to a number)
+const IG_POST_CODE='DfqHEh6kUSE', IG_MEDIA_ID='4029063914255893636';
+function igAppLink(){
+  const ua=navigator.userAgent||'';
+  if(/android/i.test(ua))return 'intent://www.instagram.com/p/'+IG_POST_CODE+'/#Intent;package=com.instagram.android;scheme=https;S.browser_fallback_url='+encodeURIComponent(INSTAGRAM_URL)+';end';
+  if(/iphone|ipad|ipod/i.test(ua)||(/macintosh/i.test(ua)&&navigator.maxTouchPoints>1))return 'instagram://media?id='+IG_MEDIA_ID;
+  return null;
+}
+let fontsReady=false;
+try{Promise.all([document.fonts.load('400 80px "Racing Sans One"'),document.fonts.load('700 30px Outfit')]).then(()=>fontsReady=true,()=>{})}catch(e){}
+function makeMyInvite(){
   const name=cleanName($('iName').value), cin=normCin($('iCin').value);
   if(name.length<3){flash('iMsg','Enter your full name.');return}
   if(cin.length<4||cin.length>12){flash('iMsg','Enter a valid CIN (letters and numbers).');return}
-  // open Instagram straight away (must happen on the tap, before anything waits)
-  let igWin=null;
-  if(INSTAGRAM_URL){try{igWin=window.open(INSTAGRAM_URL,'_blank');if(igWin)igWin.opener=null}catch(e){igWin=null}}
   // keep a record of this QR for the staff (players can only add, never read)
   if(sb){try{sb.from('registrations').insert({cin,name,name_key:normName(name)}).then(()=>{},()=>{})}catch(e){}}
-  try{await Promise.race([Promise.all([document.fonts.load('400 80px "Racing Sans One"'),document.fonts.load('700 30px Outfit')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
+  // 1) show the QR first, right away
   myCard=makeCard({name,cin});
   const img=new Image();img.src=myCard.toDataURL('image/png');img.alt='Invitation QR for '+name;
   $('myInv').innerHTML='';$('myInv').appendChild(img);
   $('gForm').classList.add('hidden');$('gResult').classList.remove('hidden');
   $('shareBtn').classList.toggle('hidden',!(navigator.canShare));
-  window.scrollTo({top:0,behavior:'smooth'});
-  if(!igWin)setTimeout(openIg,1200);
+  window.scrollTo({top:0});
+  if(!fontsReady)setTimeout(()=>{if(myCard){myCard=makeCard({name,cin});img.src=myCard.toDataURL('image/png')}},1500);
+  // 2) give them time to see / save the QR, then open the post in the Instagram app
+  if(INSTAGRAM_URL)igCountdown(3);
 }
-function resetInvite(){$('gResult').classList.add('hidden');$('gForm').classList.remove('hidden');$('iName').value='';$('iCin').value=''}
+
+let igTimer=null;
+function igCountdown(n){
+  igStop();$('igBar').classList.remove('hidden');$('igBar').style.display='flex';$('igCount').textContent=n;
+  igTimer=setInterval(()=>{n--;$('igCount').textContent=n;if(n<=0)igGo()},1000);
+}
+function igStop(){clearInterval(igTimer);igTimer=null;const b=$('igBar');if(b){b.classList.add('hidden');b.style.display='none'}}
+function igGo(){
+  igStop();
+  const app=igAppLink();
+  if(!app){openIg();return}
+  let left=false;const mark=()=>{left=true};
+  document.addEventListener('visibilitychange',mark,{once:true});window.addEventListener('pagehide',mark,{once:true});
+  try{window.location.href=app}catch(e){}
+  setTimeout(()=>{if(!left&&document.visibilityState==='visible')openIg()},1800); // app blocked or not installed -> show link
+}
+
+function resetInvite(){igStop();$('gResult').classList.add('hidden');$('gForm').classList.remove('hidden');$('iName').value='';$('iCin').value=''}
 function cardBlob(){return new Promise(r=>myCard.toBlob(r,'image/png'))}
 async function saveCard(){
   if(!myCard)return;
