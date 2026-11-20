@@ -20,7 +20,7 @@
   header h1{font-family:var(--disp);font-weight:900;font-style:italic;font-size:min(26px,5.6vw);line-height:1;margin:0;letter-spacing:.5px;text-transform:uppercase;color:var(--navy)}
   header h1 b{color:var(--sky)}
   .tabs{display:flex;gap:6px;margin-top:9px}
-  .tabs button{flex:1;padding:9px 4px;border:0;border-radius:999px;background:#eef6fb;color:var(--mute);font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+  .tabs button{flex:1;min-width:0;padding:9px 2px;border:0;border-radius:999px;background:#eef6fb;color:var(--mute);font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
   .tabs button.on{background:var(--navy);color:#fff}
   main{max-width:640px;margin:0 auto;padding:14px}
   .card{background:#fff;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 8px 28px rgba(22,37,63,.10)}
@@ -83,7 +83,7 @@
   .pop{position:fixed;inset:0;z-index:30;background:rgba(22,37,63,.6);display:flex;align-items:center;justify-content:center;padding:18px}
   .pop .box{width:100%;max-width:360px;text-align:center;background:#fff;border-radius:20px;padding:26px 20px 20px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.3)}
   .pop .x{position:absolute;right:10px;top:6px;background:none;border:0;color:var(--mute);font-size:28px;cursor:pointer}
-  .pop .ig{width:64px;height:64px;margin:0 auto 12px;border-radius:18px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);display:flex;align-items:center;justify-content:center}
+  .pop .fico{width:64px;height:64px;margin:0 auto 12px;border-radius:18px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);display:flex;align-items:center;justify-content:center}
   .pop h3{font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;margin:0 0 6px;color:var(--navy)}
   .pop h3 b{color:var(--sky)}
   .pop .btn{width:100%;margin-top:16px;text-decoration:none}
@@ -105,6 +105,7 @@
   <div class="tabs hidden" id="tabs">
     <button data-v="scan" onclick="go('scan')">Scan</button>
     <button data-v="guests" onclick="go('guests')">Guests</button>
+    <button data-v="qrs" onclick="go('qrs')">QRs</button>
     <button data-v="team" onclick="go('team')" id="tabTeam">Staff</button>
   </div>
   <div class="who-bar hidden" id="whoBar"><span>Signed in: <b id="whoName"></b> <span id="whoRole"></span></span><button class="linkbtn" onclick="logout()">Log out</button></div>
@@ -224,6 +225,26 @@
     </div>
   </section>
 
+  <!-- STAFF: QR invitations created by guests -->
+  <section id="v-qrs" class="hidden">
+    <div class="card">
+      <h2>QRs created by guests</h2>
+      <p class="muted" style="margin-top:0">Everyone who made an invitation on the guest page. This is not your guest list: add or invite people from here.</p>
+      <div class="stats">
+        <div class="stat"><b id="qTotal">0</b><span class="muted">QRs made</span></div>
+        <div class="stat"><b id="qOn">0</b><span class="muted">On your list</span></div>
+        <div class="stat"><b id="qOff">0</b><span class="muted">Not on list</span></div>
+      </div>
+      <div class="seg" id="qFilters">
+        <button class="btn sec" data-f="all" onclick="setQFilter('all')">All</button>
+        <button class="btn ghost" data-f="on" onclick="setQFilter('on')">On list</button>
+        <button class="btn ghost" data-f="off" onclick="setQFilter('off')">Not on list</button>
+      </div>
+      <input id="qSearch" placeholder="Search name or CIN" oninput="renderQrs()">
+      <div id="qList" style="margin-top:8px"><div class="muted">Loading…</div></div>
+    </div>
+  </section>
+
   <!-- ADMIN: staff accounts -->
   <section id="v-team" class="hidden">
     <div class="card">
@@ -242,14 +263,14 @@
   </section>
 </main>
 
-<div class="pop hidden" id="igPop" onclick="if(event.target===this)closeIg()">
+<div class="pop hidden" id="followPop" onclick="if(event.target===this)closeIg()">
   <div class="box">
     <button class="x" onclick="closeIg()" aria-label="Close">×</button>
-    <div class="ig"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg></div>
+    <div class="fico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg></div>
     <h3>FOLLOW US ON <b>INSTAGRAM</b></h3>
     <div class="muted">Live updates, results and photos from the event.</div>
-    <a class="btn" id="igLink" href="#" target="_blank" rel="noopener" onclick="closeIg()">Open Instagram</a>
-    <div class="muted" id="igHandle" style="margin-top:8px"></div>
+    <a class="btn" id="fLink" href="#" target="_blank" rel="noopener" onclick="closeIg()">Open the post</a>
+    <div class="muted" id="fHandle" style="margin-top:8px"></div>
   </div>
 </div>
 
@@ -257,7 +278,7 @@
 /* =================== SETTINGS — edit these =================== */
 const SUPABASE_URL      = 'https://fwfqfjoklycsjxiizbye.supabase.co';       // e.g. https://abcd1234.supabase.co
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3ZnFmam9rbHljc2p4aWl6YnllIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwNzk0NjcsImV4cCI6MjExMDY1NTQ2N30.pT84RabinhSzxZoVN1u8gs9SX5BtkdvQv1PEoZ4xtho';  // Project Settings > API > anon public key
-const INSTAGRAM_URL     = 'https://www.instagram.com/pubgmobile.morocco';                               // e.g. https://www.instagram.com/yourpage
+const INSTAGRAM_URL     = 'https://www.instagram.com/p/DfqHEh6kUSE/';                               // e.g. https://www.instagram.com/yourpage
 const EVENT = {
   name:  'PUBG MOBILE FLASH CÉLÉBRATION',
   date:  'Sunday 22 Nov 2026 · 10:00 – 18:00',
@@ -296,7 +317,7 @@ function applyEvent(){
 }
 
 /* =================== routing =================== */
-const STAFF_VIEWS=['scan','guests','team'];
+const STAFF_VIEWS=['scan','guests','qrs','team'];
 function go(v){location.hash=v}
 window.addEventListener('hashchange',route);
 function route(){
@@ -308,7 +329,7 @@ function route(){
     else v=STAFF_VIEWS.includes(h)?h:'scan';
     if(v==='team'&&me&&me.role!=='admin') v='scan';
   }
-  ['invite','login','setup','scan','guests','team'].forEach(x=>$('v-'+x).classList.toggle('hidden',x!==v));
+  ['invite','login','setup','scan','guests','qrs','team'].forEach(x=>$('v-'+x).classList.toggle('hidden',x!==v));
   const staffMode=!!me&&STAFF_VIEWS.includes(v);
   $('tabs').classList.toggle('hidden',!staffMode);
   $('whoBar').classList.toggle('hidden',!staffMode);
@@ -318,9 +339,11 @@ function route(){
   if(v!=='scan')stopLive();
   if(v==='guests')loadGuests();
   if(v==='team')loadTeam();
+  if(v==='qrs')loadQrs();
   if(v==='scan'&&!stream&&canLive())toggleLive();
   clearInterval(pollTimer);
   if(v==='guests')pollTimer=setInterval(loadGuests,10000);
+  if(v==='qrs')pollTimer=setInterval(loadQrs,15000);
   if((v==='login'||v==='setup'||staffMode)&&!sb)note('Website not connected yet: paste the Supabase URL and key in the settings at the top of index.html.');
   else note('');
 }
@@ -465,12 +488,61 @@ async function delGuest(id,btn){
   await sb.from('guests').delete().eq('id',id);loadGuests();
 }
 
+
+/* =================== QRs made by guests (staff) =================== */
+let regs=[], qFilter='all';
+function setQFilter(f){qFilter=f;document.querySelectorAll('#qFilters button').forEach(b=>b.className='btn '+(b.dataset.f===f?'sec':'ghost'));renderQrs()}
+async function loadQrs(){
+  if(!sb||!me)return;
+  const [r,g]=await Promise.all([
+    sb.from('registrations').select('*').order('created_at',{ascending:false}).limit(3000),
+    sb.from('guests').select('*').limit(3000)]);
+  if(r.error){$('qList').innerHTML='<div class="muted">Could not load. Did you run update-qrs.sql in Supabase?</div>';return}
+  regs=r.data||[];if(!g.error){guests={};g.data.forEach(x=>guests[x.id]=x)}
+  renderQrs();
+}
+function guestFor(q){const all=Object.values(guests);return all.find(x=>x.cin&&x.cin===q.cin)||all.find(x=>(x.name_key||normName(x.name))===(q.name_key||normName(q.name)))||null}
+function renderQrs(){
+  const rows=regs.map(q=>({q,g:guestFor(q)}));
+  $('qTotal').textContent=rows.length;$('qOn').textContent=rows.filter(x=>x.g&&x.g.status!=='revoked').length;$('qOff').textContent=rows.filter(x=>!x.g||x.g.status==='revoked').length;
+  const t=normName($('qSearch').value||''),tc=normCin($('qSearch').value||'');
+  const shown=rows.filter(({q,g})=>{const on=g&&g.status!=='revoked';
+    if(qFilter==='on'&&!on)return false;if(qFilter==='off'&&on)return false;
+    return !t||(q.name_key||normName(q.name)).includes(t)||(tc&&q.cin.includes(tc))});
+  if(!shown.length){$('qList').innerHTML='<div class="muted">'+(rows.length?'No match.':'No QR made yet.')+'</div>';return}
+  $('qList').innerHTML=shown.slice(0,400).map(({q,g})=>{const id=esc(q.id);
+    const st=!g?'<span class="pill p-rejected">not on list</span>':g.status==='approved'?'<span class="pill p-approved">invited</span>':g.status==='listed'?'<span class="pill p-listed">pre-guest</span>':'<span class="pill p-rejected">not registered</span>';
+    return `<div class="guest" style="flex-wrap:wrap"><div class="who"><b>${esc(q.name)}</b><span class="muted">CIN ${esc(q.cin)} · ${esc(fmtTime(q.created_at))}</span>${g&&g.checked_in?'<div class="in">Entered</div>':''}</div>${st}
+      <div class="act" style="width:100%;justify-content:flex-end">
+        ${!g||g.status!=='approved'?`<button class="btn" onclick="qrInvite('${id}','approved')">Invite</button>`:''}
+        ${!g?`<button class="btn ghost" onclick="qrInvite('${id}','listed')">Add as pre-guest</button>`:''}
+        ${me&&me.role==='admin'?`<button class="btn red" onclick="qrDelete('${id}',this)">✕</button>`:''}
+      </div></div>`}).join('')+(shown.length>400?'<div class="muted">Showing 400 – use search.</div>':'');
+}
+async function qrInvite(id,status){
+  const q=regs.find(x=>x.id===id);if(!q)return;const g=guestFor(q);
+  let error;
+  if(g){({error}=await sb.from('guests').update(Object.assign({status},g.cin?{}:{cin:q.cin})).eq('id',g.id))}
+  else{({error}=await sb.from('guests').insert({name:q.name,name_key:normName(q.name),cin:q.cin,status}))}
+  if(error)alert(/guests_cin_key|duplicate/i.test(error.message)?'This CIN is already used by another player on your list.':error.message);
+  loadQrs();
+}
+async function qrDelete(id,btn){
+  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='✕'},3500);return}
+  await sb.from('registrations').delete().eq('id',id);loadQrs();
+}
+
 /* =================== player invitation =================== */
 let myCard=null;
 async function makeMyInvite(){
   const name=cleanName($('iName').value), cin=normCin($('iCin').value);
   if(name.length<3){flash('iMsg','Enter your full name.');return}
   if(cin.length<4||cin.length>12){flash('iMsg','Enter a valid CIN (letters and numbers).');return}
+  // open Instagram straight away (must happen on the tap, before anything waits)
+  let igWin=null;
+  if(INSTAGRAM_URL){try{igWin=window.open(INSTAGRAM_URL,'_blank');if(igWin)igWin.opener=null}catch(e){igWin=null}}
+  // keep a record of this QR for the staff (players can only add, never read)
+  if(sb){try{sb.from('registrations').insert({cin,name,name_key:normName(name)}).then(()=>{},()=>{})}catch(e){}}
   try{await Promise.race([Promise.all([document.fonts.load('400 80px "Racing Sans One"'),document.fonts.load('700 30px Outfit')]),new Promise(r=>setTimeout(r,2500))])}catch(e){}
   myCard=makeCard({name,cin});
   const img=new Image();img.src=myCard.toDataURL('image/png');img.alt='Invitation QR for '+name;
@@ -478,7 +550,7 @@ async function makeMyInvite(){
   $('gForm').classList.add('hidden');$('gResult').classList.remove('hidden');
   $('shareBtn').classList.toggle('hidden',!(navigator.canShare));
   window.scrollTo({top:0,behavior:'smooth'});
-  setTimeout(openIg,1200);
+  if(!igWin)setTimeout(openIg,1200);
 }
 function resetInvite(){$('gResult').classList.add('hidden');$('gForm').classList.remove('hidden');$('iName').value='';$('iCin').value=''}
 function cardBlob(){return new Promise(r=>myCard.toBlob(r,'image/png'))}
@@ -515,8 +587,8 @@ function makeCard(g){
 function fitText(x,t,cx,y,maxW,start,weight,fam){let s=start;do{x.font=`${weight} ${s}px ${fam}`;s-=2}while(x.measureText(t).width>maxW&&s>18);x.fillText(t,cx,y)}
 
 /* =================== instagram popup =================== */
-function openIg(){ if(!INSTAGRAM_URL)return; $('igLink').href=INSTAGRAM_URL; $('igHandle').textContent=INSTAGRAM_URL.replace(/^https?:\/\/(www\.)?instagram\.com\//,'@').replace(/[/?].*$/,''); $('igPop').classList.remove('hidden') }
-function closeIg(){ $('igPop').classList.add('hidden') }
+function openIg(){ if(!INSTAGRAM_URL)return; $('fLink').href=INSTAGRAM_URL; $('fHandle').textContent=/\/(p|reel)\//.test(INSTAGRAM_URL)?'@pubgmobile.morocco – event post':INSTAGRAM_URL.replace(/^https?:\/\/(www\.)?instagram\.com\//,'@').replace(/[/?].*$/,''); $('followPop').classList.remove('hidden') }
+function closeIg(){ $('followPop').classList.add('hidden') }
 
 /* =================== scanning =================== */
 let stream=null, rafId=null, lastHit={t:0,v:''}, lastScan=null, busy=false;
