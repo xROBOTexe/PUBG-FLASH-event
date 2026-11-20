@@ -46,7 +46,7 @@
   .guest .who{flex:1;min-width:0}
   .guest .who b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
   .pill{font-size:11px;font-weight:800;padding:4px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.8px}
-  .p-approved{background:#e3f7ec;color:var(--ok)}.p-rejected{background:#fdecec;color:var(--bad)}
+  .p-listed{background:#fff4d6;color:#a06c00}.p-approved{background:#e3f7ec;color:var(--ok)}.p-rejected{background:#fdecec;color:var(--bad)}
   .in{font-size:12px;color:var(--ok);font-weight:700}
   .guest .act{display:flex;gap:6px}
   .guest .act button{padding:7px 10px;font-size:12px}
@@ -88,7 +88,11 @@
   .pop h3 b{color:var(--sky)}
   .pop .btn{width:100%;margin-top:16px;text-decoration:none}
   .seg{display:flex;gap:6px;margin-bottom:10px}
-  .seg button{flex:1}
+  .seg{flex-wrap:wrap}.seg button{flex:1 1 18%;min-width:0;padding:10px 4px;font-size:12px;letter-spacing:.2px}
+  #list .guest,#teamList .guest{flex-wrap:wrap}
+  #list .who b{white-space:normal}
+  #list .act{width:100%;justify-content:flex-end;flex-wrap:wrap}
+  html,body{overflow-x:hidden}
   .who-bar{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:13px;color:var(--mute);margin-top:8px}
   .who-bar b{color:var(--navy)}
   .linkbtn{background:none;border:0;color:var(--navy);font-weight:700;text-decoration:underline;cursor:pointer;font-family:var(--body);font-size:13px;padding:0}
@@ -176,28 +180,44 @@
       <p class="muted" id="scanHint">Point the camera at the guest's QR. If the camera is blocked, use Photo scan.</p>
     </div>
     <div class="card">
-      <h2>Check by CIN</h2>
-      <div class="row"><input id="manCin" placeholder="CIN" style="text-transform:uppercase"><button class="btn ghost" style="flex:0 0 auto" onclick="manualCheck()">Check</button></div>
+      <h2>Check by CIN or name</h2>
+      <div class="row"><input id="manCin" placeholder="CIN or full name"><button class="btn ghost" style="flex:0 0 auto" onclick="manualCheck()">Check</button></div>
     </div>
   </section>
 
   <!-- STAFF: guest list -->
   <section id="v-guests" class="hidden">
     <div class="card">
-      <h2>Approve a guest</h2>
-      <div class="row">
-        <div><label for="aName">Full name</label><input id="aName" placeholder="Full name" autocomplete="off"></div>
-        <div><label for="aCin">CIN</label><input id="aCin" placeholder="AB123456" autocomplete="off" style="text-transform:uppercase"></div>
+      <h2>Add players</h2>
+      <div class="seg">
+        <button class="btn ghost" id="modeOne" onclick="addMode('one')">One player</button>
+        <button class="btn ghost" id="modeList" onclick="addMode('list')">Paste a list</button>
       </div>
-      <button class="btn wide" onclick="addApproved()">Approve</button>
+      <div id="addOne">
+        <label for="aName">Full name</label><input id="aName" placeholder="Full name" autocomplete="off">
+        <label for="aCin">CIN (optional)</label><input id="aCin" placeholder="Leave empty if you don't have it" autocomplete="off" style="text-transform:uppercase">
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;color:var(--navy)"><input type="checkbox" id="aApprove"> Invite now</label>
+      </div>
+      <div id="addList" class="hidden">
+        <label for="aBulk">One player per line. Add a CIN after a comma if you have it.</label>
+        <textarea id="aBulk" rows="7" placeholder="Ahmed Arif&#10;Youssef El Amrani, BE123456&#10;Sara Bennani" style="width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-size:16px"></textarea>
+      </div>
+      <button class="btn wide" onclick="addPlayers()">Add to list</button>
       <div id="aMsg" class="muted" style="margin-top:8px"></div>
     </div>
     <div class="card">
-      <h2>Guest list</h2>
+      <h2>Player list</h2>
       <div class="stats">
-        <div class="stat"><b id="sApp">0</b><span class="muted">Approved</span></div>
+        <div class="stat"><b id="sList">0</b><span class="muted">Pre-guests</span></div>
+        <div class="stat"><b id="sApp">0</b><span class="muted">Invited</span></div>
         <div class="stat"><b id="sIn">0</b><span class="muted">Entered</span></div>
-        <div class="stat"><b id="sRej">0</b><span class="muted">Revoked</span></div>
+      </div>
+      <div class="seg" id="filters">
+        <button class="btn ghost" data-f="all" onclick="setFilter('all')">All</button>
+        <button class="btn ghost" data-f="listed" onclick="setFilter('listed')">Pre-guests</button>
+        <button class="btn ghost" data-f="approved" onclick="setFilter('approved')">Invited</button>
+        <button class="btn ghost" data-f="in" onclick="setFilter('in')">Entered</button>
+        <button class="btn ghost" data-f="revoked" onclick="setFilter('revoked')">Not reg.</button>
       </div>
       <input id="search" placeholder="Search name or CIN" oninput="renderList()">
       <div id="list" style="margin-top:8px"><div class="muted">Loading…</div></div>
@@ -372,41 +392,77 @@ async function removeStaff(id,btn){
 }
 
 /* =================== guests (staff) =================== */
+let filter='all', editing=null;
+function addMode(m){$('addOne').classList.toggle('hidden',m!=='one');$('addList').classList.toggle('hidden',m!=='list');
+  $('modeOne').className='btn '+(m==='one'?'sec':'ghost');$('modeList').className='btn '+(m==='list'?'sec':'ghost');addMode.m=m}
+function setFilter(f){filter=f;document.querySelectorAll('#filters button').forEach(b=>b.className='btn '+(b.dataset.f===f?'sec':'ghost'));renderList()}
 async function loadGuests(){
   if(!sb||!me)return;
-  const {data,error}=await sb.from('guests').select('*').order('created_at',{ascending:false}).limit(2000);
+  const {data,error}=await sb.from('guests').select('*').order('created_at',{ascending:false}).limit(3000);
   if(error){$('list').innerHTML='<div class="muted">Could not load the list. Check your connection.</div>';return}
-  guests={};data.forEach(g=>guests[g.cin]=g);renderList();
+  guests={};data.forEach(g=>guests[g.id]=g);renderList();
 }
 function renderList(){
   const all=Object.values(guests);
+  $('sList').textContent=all.filter(g=>g.status==='listed').length;
   $('sApp').textContent=all.filter(g=>g.status==='approved').length;
   $('sIn').textContent=all.filter(g=>g.checked_in).length;
-  $('sRej').textContent=all.filter(g=>g.status!=='approved').length;
-  const q=($('search').value||'').trim().toLowerCase();
-  const rows=all.filter(g=>!q||g.name.toLowerCase().includes(q)||g.cin.toLowerCase().includes(q));
-  if(!rows.length){$('list').innerHTML='<div class="muted">'+(all.length?'No match.':'No approved guests yet.')+'</div>';return}
-  $('list').innerHTML=rows.map(g=>{const c=esc(g.cin);return `<div class="guest">
-    <div class="who"><b>${esc(g.name)}</b><span class="muted">${c}</span>${g.checked_in?`<div class="in">Entered ${esc(fmtTime(g.checked_in_at))}${g.checked_in_by?' · '+esc(g.checked_in_by):''}</div>`:''}</div>
-    <span class="pill p-${g.status==='approved'?'approved':'rejected'}">${g.status}</span>
+  const q=normName($('search').value||''), qc=normCin($('search').value||'');
+  const rows=all.filter(g=>(filter==='all'||(filter==='in'?g.checked_in:g.status===filter))&&
+    (!q||(g.name_key||normName(g.name)).includes(q)||(qc&&g.cin&&g.cin.includes(qc))))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  if(!rows.length){$('list').innerHTML='<div class="muted">'+(all.length?'No match.':'No players yet. Add them above.')+'</div>';return}
+  $('list').innerHTML=rows.slice(0,400).map(g=>{const id=esc(g.id);
+    const pill=g.status==='approved'?'<span class="pill p-approved">invited</span>':g.status==='listed'?'<span class="pill p-listed">pre-guest</span>':'<span class="pill p-rejected">not registered</span>';
+    return `<div class="guest" style="flex-wrap:wrap">
+    <div class="who"><b>${esc(g.name)}</b><span class="muted">${g.cin?'CIN '+esc(g.cin):'No CIN yet'}</span>${g.checked_in?`<div class="in">Entered ${esc(fmtTime(g.checked_in_at))}${g.checked_in_by?' · '+esc(g.checked_in_by):''}</div>`:''}</div>
+    ${pill}
     <div class="act">
-      ${g.status==='approved'?`<button class="btn ghost" onclick="setStatus('${c}','revoked')">Revoke</button>`:`<button class="btn ghost" onclick="setStatus('${c}','approved')">Approve</button>`}
-      ${g.checked_in?`<button class="btn ghost" title="Undo entry" onclick="resetEntry('${c}')">Undo</button>`:''}
-      <button class="btn red" onclick="delGuest('${c}',this)">✕</button>
-    </div></div>`}).join('');
+      ${g.status==='approved'?`<button class="btn ghost" onclick="setStatus('${id}','listed')">Uninvite</button>`:`<button class="btn" onclick="setStatus('${id}','approved')">Invite</button>`}
+      <button class="btn ghost" onclick="editCin('${id}')">CIN</button>
+      ${g.checked_in?`<button class="btn ghost" title="Undo entry" onclick="resetEntry('${id}')">Undo</button>`:''}
+      <button class="btn red" onclick="delGuest('${id}',this)">✕</button>
+    </div>
+    ${editing===g.id?`<div class="row" style="width:100%;margin-top:8px"><input id="cinEdit" placeholder="CIN" value="${esc(g.cin||'')}" style="text-transform:uppercase"><button class="btn sec" style="flex:0 0 auto" onclick="saveCin('${id}')">Save</button></div>`:''}
+    </div>`}).join('')+(rows.length>400?'<div class="muted">Showing 400 – use search.</div>':'');
 }
-async function addApproved(){
-  const name=cleanName($('aName').value), cin=normCin($('aCin').value);
-  if(name.length<2||cin.length<4||cin.length>12){flash('aMsg','Enter full name and a valid CIN.');return}
-  const {error}=await sb.from('guests').upsert({cin,name,status:'approved'},{onConflict:'cin'});
-  if(error){flash('aMsg','Could not save: '+error.message);return}
-  $('aName').value='';$('aCin').value='';flash('aMsg','Approved: '+name);loadGuests();
+function parseLines(txt){
+  return String(txt||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{
+    const m=l.split(/[,;\t]/);const name=cleanName(m[0]);const cin=normCin(m[1]||'');return {name,cin:cin.length>=4&&cin.length<=12?cin:null}
+  }).filter(r=>r.name.length>=2);
 }
-async function setStatus(cin,status){await sb.from('guests').update({status}).eq('cin',cin);loadGuests()}
-async function resetEntry(cin){await sb.from('guests').update({checked_in:false,checked_in_at:null,checked_in_by:null}).eq('cin',cin);loadGuests()}
-async function delGuest(cin,btn){
+async function addPlayers(){
+  let rows, approve=false;
+  if(addMode.m==='list'){rows=parseLines($('aBulk').value)}
+  else{const name=cleanName($('aName').value),cin=normCin($('aCin').value);
+    if(name.length<2){flash('aMsg','Enter a full name.');return}
+    if(cin&&(cin.length<4||cin.length>12)){flash('aMsg','CIN looks wrong.');return}
+    rows=[{name,cin:cin||null}];approve=$('aApprove').checked}
+  if(!rows.length){flash('aMsg','Nothing to add.');return}
+  const existing=new Set(Object.values(guests).map(g=>g.name_key||normName(g.name)));
+  const fresh=rows.filter(r=>{const k=normName(r.name);if(existing.has(k))return false;existing.add(k);return true});
+  const skipped=rows.length-fresh.length;
+  if(!fresh.length){flash('aMsg','Already on the list.');return}
+  flash('aMsg','Adding '+fresh.length+'…');
+  const payload=fresh.map(r=>({name:r.name,name_key:normName(r.name),cin:r.cin,status:approve?'approved':'listed'}));
+  const {error}=await sb.from('guests').insert(payload);
+  if(error){flash('aMsg',/guests_cin_key|duplicate/i.test(error.message)?'A CIN in your list is already used by another player.':'Could not save: '+error.message);return}
+  $('aName').value='';$('aCin').value='';$('aBulk').value='';$('aApprove').checked=false;
+  flash('aMsg','Added '+fresh.length+(skipped?' · '+skipped+' already on the list':'')+'.');loadGuests();
+}
+async function setStatus(id,status){await sb.from('guests').update({status}).eq('id',id);loadGuests()}
+async function resetEntry(id){await sb.from('guests').update({checked_in:false,checked_in_at:null,checked_in_by:null}).eq('id',id);loadGuests()}
+function editCin(id){editing=editing===id?null:id;renderList();const i=$('cinEdit');if(i)i.focus()}
+async function saveCin(id){
+  const c=normCin($('cinEdit').value);
+  if(c&&(c.length<4||c.length>12)){alert('CIN looks wrong.');return}
+  const {error}=await sb.from('guests').update({cin:c||null}).eq('id',id);
+  if(error){alert(/guests_cin_key|duplicate/i.test(error.message)?'This CIN is already used by another player.':error.message);return}
+  editing=null;loadGuests();
+}
+async function delGuest(id,btn){
   if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='✕'},3500);return}
-  await sb.from('guests').delete().eq('cin',cin);loadGuests();
+  await sb.from('guests').delete().eq('id',id);loadGuests();
 }
 
 /* =================== player invitation =================== */
@@ -505,49 +561,79 @@ function beep(ok){try{const a=new (window.AudioContext||window.webkitAudioContex
 function handleCode(text){
   const p=String(text).split('|');
   if(!/^INV[12]$/.test(p[0])||p.length<3){beep(false);return showResult('bad','INVALID QR','','','This is not an invitation for this event.')}
-  verify(normCin(p[1]),p[2]);
+  verify(normCin(p[1]),cleanName(p[2]));
 }
-function manualCheck(){const cin=normCin($('manCin').value);if(!cin)return;$('manCin').value='';verify(cin,null)}
+function manualCheck(){
+  const v=$('manCin').value.trim();if(!v)return;$('manCin').value='';
+  const c=normCin(v);
+  if(/\d/.test(v)&&c.length>=4&&c.length<=12&&!/\s/.test(v.trim()))verify(c,null);else verify(null,cleanName(v));
+}
+const nowIso=()=>new Date().toISOString();
+// scan: find by CIN, then by exact name, then suggest similar names
 async function verify(cin,qrName){
-  busy=true;lastScan={cin,name:qrName};
+  busy=true;lastScan={cin,name:qrName,matches:[]};
   try{
-    const {data:g,error}=await sb.from('guests').select('*').eq('cin',cin).maybeSingle();
-    if(error){beep(false);return showResult('warn','OFFLINE','',cin,'Could not reach the guest list. Try again.')}
-    if(!g){beep(false);return showResult('bad','NOT APPROVED',qrName||'',cin,'This CIN is not on the approved list.','approve')}
-    if(g.status!=='approved'){beep(false);return showResult('bad','REVOKED',g.name,cin,'This guest was removed from the list.','approve')}
-    if(qrName&&normName(qrName)!==normName(g.name)){beep(false);return showResult('warn','NAME MISMATCH',g.name,cin,'QR says "'+qrName+'". Check the CIN card first.','enter')}
-    if(g.checked_in){beep(false);return showResult('warn','ALREADY ENTERED',g.name,cin,'Entered '+fmtTime(g.checked_in_at)+(g.checked_in_by?' · by '+g.checked_in_by:'')+'. Check the CIN card.')}
-    beep(true);
-    const {error:e2}=await sb.from('guests').update({checked_in:true,checked_in_at:new Date().toISOString(),checked_in_by:me.display_name}).eq('cin',cin);
-    showResult('ok','APPROVED',g.name,cin,e2?'Approved, but entry was not recorded.':'Welcome! Marked as entered.');
+    let g=null;
+    if(cin){const r=await sb.from('guests').select('*').eq('cin',cin).maybeSingle();if(r.error)return offline(cin);g=r.data}
+    if(!g&&qrName){const r=await sb.from('guests').select('*').eq('name_key',normName(qrName)).limit(5);if(r.error)return offline(cin);
+      const free=(r.data||[]).filter(x=>!x.cin||x.cin===cin);if(free.length===1)g=free[0];else if(free.length>1)lastScan.matches=free}
+    if(g)return judge(g,cin,qrName);
+    // not found: look for similar names
+    if(qrName&&!lastScan.matches.length){
+      const toks=normName(qrName).split(' ').filter(t=>t.length>=3).slice(0,4);
+      if(toks.length){const r=await sb.from('guests').select('*').or(toks.map(t=>`name_key.ilike.%${t}%`).join(',')).limit(6);
+        lastScan.matches=(r.data||[]).filter(x=>!x.cin||x.cin===cin)}
+    }
+    beep(false);
+    if(lastScan.matches.length)return showResult('bad','NOT ON LIST',qrName||'',cin||'','Is it one of these players?','pick');
+    await saveUnreg();
   }finally{setTimeout(()=>busy=false,1500)}
+}
+function offline(cin){beep(false);showResult('warn','OFFLINE','',cin||'','Could not reach the list. Try again.')}
+async function judge(g,cin,qrName){
+  lastScan.id=g.id;
+  if(g.status==='revoked'){beep(false);return showResult('bad','NOT REGISTERED',g.name,cin||g.cin||'','Not registered by us. Let in only if you decide to invite them.','approve')}
+  if(g.status==='listed'){beep(false);return showResult('warn','PRE-GUEST – NOT INVITED YET',g.name,cin||g.cin||'','Check the CIN card, then invite.','approve')}
+  if(g.checked_in){beep(false);return showResult('warn','ALREADY ENTERED',g.name,cin||g.cin||'','Entered '+fmtTime(g.checked_in_at)+(g.checked_in_by?' · by '+g.checked_in_by:'')+'.')}
+  if(cin&&g.cin&&g.cin!==cin){beep(false);return showResult('warn','CIN MISMATCH',g.name,cin,'List has CIN '+g.cin+'. Check the CIN card.','enter')}
+  beep(true);
+  const upd={checked_in:true,checked_in_at:nowIso(),checked_in_by:me.display_name};if(cin&&!g.cin)upd.cin=cin;
+  const {error}=await sb.from('guests').update(upd).eq('id',g.id);
+  showResult('ok','INVITED ✔',g.name,cin||g.cin||'',error?'Invited, but entry was not saved.':'Welcome! Marked as entered.');
 }
 function showResult(kind,big,name,cin,why,action){
   const cls=kind==='ok'?'r-ok':kind==='bad'?'r-bad':'r-warn';
   let btn='';
-  if(action==='approve'&&name)btn=`<button class="btn" onclick="approveNow()">Approve & let in</button>`;
-  if(action==='enter')btn=`<button class="btn" onclick="enterNow()">CIN checked – let in</button>`;
+  if(action==='approve')btn=`<button class="btn" onclick="approveNow()">Invite & let in</button>`;
+  if(action==='enter')btn=`<button class="btn" onclick="approveNow()">CIN checked – let in</button>`;
+  if(action==='pick')btn=lastScan.matches.map((m,i)=>`<button class="btn" style="display:block;width:100%;margin-top:8px" onclick="pickMatch(${i})">${esc(m.name)}${m.cin?' · '+esc(m.cin):''}${m.status==='approved'?' ✓':''}</button>`).join('')+(name?`<button class="btn" style="display:block;width:100%;margin-top:8px;opacity:.85" onclick="saveUnreg()">None of these</button>`:'');
   $('resultBox').innerHTML=`<div class="result ${cls}"><div class="big">${esc(big)}</div>
     ${name?`<div class="nm">${esc(name)}</div>`:''}${cin?`<div class="cin">CIN: ${esc(cin)}</div>`:''}
     ${why?`<div class="why">${esc(why)}</div>`:''}${btn}</div>`;
   window.scrollTo({top:0,behavior:'smooth'});
 }
 async function approveNow(){
-  if(!lastScan||!lastScan.name)return;
-  const {cin,name}=lastScan;
-  const {error}=await sb.from('guests').upsert({cin,name,status:'approved',checked_in:true,checked_in_at:new Date().toISOString(),checked_in_by:me.display_name},{onConflict:'cin'});
-  if(error)return showResult('bad','NOT SAVED',name,cin,error.message);
-  beep(true);showResult('ok','APPROVED',name,cin,'Added to the list and marked as entered.');
+  if(!lastScan||!lastScan.id)return;
+  const upd={status:'approved',checked_in:true,checked_in_at:nowIso(),checked_in_by:me.display_name};
+  if(lastScan.cin)upd.cin=lastScan.cin;
+  const {data,error}=await sb.from('guests').update(upd).eq('id',lastScan.id).select().maybeSingle();
+  if(error)return showResult('bad','NOT SAVED','',lastScan.cin||'',/guests_cin_key|duplicate/i.test(error.message)?'This CIN is already used by another player.':error.message);
+  beep(true);showResult('ok','INVITED ✔',data?data.name:'',upd.cin||(data&&data.cin)||'','Invited and marked as entered.');
 }
-async function enterNow(){
-  if(!lastScan)return;
-  await sb.from('guests').update({checked_in:true,checked_in_at:new Date().toISOString(),checked_in_by:me.display_name}).eq('cin',lastScan.cin);
-  beep(true);showResult('ok','ENTERED','',lastScan.cin,'');
+async function pickMatch(i){const m=lastScan.matches[i];if(!m)return;lastScan.id=m.id;if(m.status==='approved'&&!m.checked_in)return judge(m,lastScan.cin,lastScan.name);approveNow()}
+// someone not on our list: save them as "not registered", staff may still invite
+async function saveUnreg(){
+  if(!lastScan||(!lastScan.name&&!lastScan.cin)){beep(false);return showResult('bad','NOT ON LIST','','','No player with this name or CIN.')}
+  beep(false);
+  if(!lastScan.name){return showResult('bad','NOT ON LIST','',lastScan.cin,'No player with this CIN.')}
+  const {data,error}=await sb.from('guests').insert({name:lastScan.name,name_key:normName(lastScan.name),cin:lastScan.cin||null,status:'revoked'}).select().maybeSingle();
+  if(!error&&data)lastScan.id=data.id;
+  showResult('bad','NOT REGISTERED',lastScan.name,lastScan.cin||'',error?'Not on your list.':'Not on your list – saved as not registered.',data?'approve':null);
 }
 
 /* =================== start =================== */
 (async function(){
-  applyEvent();
+  applyEvent();addMode('one');setFilter('all');
   try{await loadMe()}catch(e){}
   route();
   if(sb)sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT'){me=null;route()}});
