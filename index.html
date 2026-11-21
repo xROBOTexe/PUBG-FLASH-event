@@ -83,7 +83,7 @@
   .share{background:#fff;border-left:4px solid var(--sky);border-radius:10px;padding:10px 12px;font-size:14px;margin-bottom:14px}
   .pop{position:fixed;inset:0;z-index:30;background:rgba(22,37,63,.6);display:flex;align-items:center;justify-content:center;padding:18px}
   .pop .box{width:100%;max-width:360px;text-align:center;background:#fff;border-radius:20px;padding:26px 20px 20px;position:relative;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-  .pop .x{position:absolute;right:10px;top:6px;background:none;border:0;color:var(--mute);font-size:28px;cursor:pointer}
+  .pop .x{position:absolute;right:12px;top:10px;background:none;border:0;color:var(--mute);font-family:var(--body);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.6px;cursor:pointer}
   .pop .fico{width:64px;height:64px;margin:0 auto 12px;border-radius:18px;background:radial-gradient(circle at 30% 107%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);display:flex;align-items:center;justify-content:center}
   .pop h3{font-family:var(--disp);font-weight:400;font-size:34px;line-height:1;margin:0 0 6px;color:var(--navy)}
   .pop h3 b{color:var(--sky)}
@@ -280,7 +280,7 @@
 
 <div class="pop hidden" id="passPop" onclick="if(event.target===this)closePass()">
   <div class="box" style="max-width:420px">
-    <button class="x" onclick="closePass()" aria-label="Close">×</button>
+    <button class="x" onclick="closePass()" aria-label="Close">Close</button>
     <div id="passImg" class="inv"></div>
     <div class="row" style="margin-top:12px">
       <button class="btn" onclick="savePass()">Download</button>
@@ -292,8 +292,7 @@
 
 <div class="pop hidden" id="followPop" onclick="if(event.target===this)closeIg()">
   <div class="box">
-    <button class="x" onclick="closeIg()" aria-label="Close">×</button>
-    <div class="fico"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="#fff"/></svg></div>
+    <button class="x" onclick="closeIg()" aria-label="Close">Close</button>
     <h3>FOLLOW US ON <b>INSTAGRAM</b></h3>
     <div class="muted">Live updates, results and photos from the event.</div>
     <a class="btn" id="fLink" href="#" target="_blank" rel="noopener" onclick="closeIg()">Open the post</a>
@@ -476,7 +475,7 @@ function renderList(){
       <button class="btn ghost" onclick="showPass('${id}')">QR</button>
       <button class="btn ghost" onclick="editCin('${id}')">Edit</button>
       ${g.checked_in?`<button class="btn ghost" title="Undo entry" onclick="resetEntry('${id}')">Undo</button>`:''}
-      <button class="btn red" onclick="delGuest('${id}',this)">✕</button>
+      <button class="btn red" onclick="delGuest('${id}',this)">Delete</button>
     </div>
     ${editing===g.id?`<div style="width:100%;margin-top:8px"><div class="row"><input id="teamEdit" placeholder="Team" list="teamList" value="${esc(g.team||'')}"><input id="ignEdit" placeholder="IGN" value="${esc(g.ign||'')}"></div><div class="row" style="margin-top:6px"><input id="cinEdit" placeholder="CIN" value="${esc(g.cin||'')}" style="text-transform:uppercase"><button class="btn sec" style="flex:0 0 auto" onclick="saveCin('${id}')">Save</button></div></div>`:''}
     </div>`}).join('')+(rows.length>400?'<div class="muted">Showing 400 – use search.</div>':'');
@@ -521,7 +520,7 @@ async function saveCin(id){
   editing=null;loadGuests();
 }
 async function delGuest(id,btn){
-  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='✕'},3500);return}
+  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='Delete'},3500);return}
   await sb.from('guests').delete().eq('id',id);loadGuests();
 }
 
@@ -553,7 +552,7 @@ function renderQrs(){
       <div class="act" style="width:100%;justify-content:flex-end">
         ${!g||g.status!=='approved'?`<button class="btn" onclick="qrInvite('${id}','approved')">Invite</button>`:''}
         ${!g?`<button class="btn ghost" onclick="qrInvite('${id}','listed')">Add as pre-guest</button>`:''}
-        ${me&&me.role==='admin'?`<button class="btn red" onclick="qrDelete('${id}',this)">✕</button>`:''}
+        ${me&&me.role==='admin'?`<button class="btn red" onclick="qrDelete('${id}',this)">Delete</button>`:''}
       </div></div>`}).join('')+(shown.length>400?'<div class="muted">Showing 400 – use search.</div>':'');
 }
 async function qrInvite(id,status){
@@ -565,7 +564,7 @@ async function qrInvite(id,status){
   loadQrs();
 }
 async function qrDelete(id,btn){
-  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='✕'},3500);return}
+  if(btn.dataset.sure!=='1'){btn.dataset.sure='1';btn.textContent='Sure?';setTimeout(()=>{btn.dataset.sure='';btn.textContent='Delete'},3500);return}
   await sb.from('registrations').delete().eq('id',id);loadQrs();
 }
 
@@ -769,7 +768,7 @@ async function verifyPass(id,label){
     if(g.checked_in){beep(false);return showResult('warn','ALREADY ENTERED',g.ign||g.name,g.cin||'','Entered '+fmtTime(g.checked_in_at)+(g.checked_in_by?' · by '+g.checked_in_by:'')+'.')}
     beep(true);
     const {error}=await sb.from('guests').update({status:'approved',checked_in:true,checked_in_at:nowIso(),checked_in_by:me.display_name}).eq('id',g.id);
-    showResult('ok','PLAYER ✔',g.ign||g.name,g.cin||'',error?'Valid pass, but entry was not saved.':'Welcome! Marked as entered.');
+    showResult('ok','PLAYER – LET IN',g.ign||g.name,g.cin||'',error?'Valid pass, but entry was not saved.':'Welcome! Marked as entered.');
   }finally{setTimeout(()=>busy=false,1500)}
 }
 
@@ -817,7 +816,7 @@ async function judge(g,cin,qrName){
   beep(true);
   const upd={checked_in:true,checked_in_at:nowIso(),checked_in_by:me.display_name};if(cin&&!g.cin)upd.cin=cin;
   const {error}=await sb.from('guests').update(upd).eq('id',g.id);
-  showResult('ok','INVITED ✔',g.name,cin||g.cin||'',error?'Invited, but entry was not saved.':'Welcome! Marked as entered.');
+  showResult('ok','INVITED',g.name,cin||g.cin||'',error?'Invited, but entry was not saved.':'Welcome! Marked as entered.');
 }
 function showResult(kind,big,name,cin,why,action){
   const tg=lastScan&&lastScan.g;
@@ -825,7 +824,7 @@ function showResult(kind,big,name,cin,why,action){
   let btn='';
   if(action==='approve')btn=`<button class="btn" onclick="approveNow()">Invite & let in</button>`;
   if(action==='enter')btn=`<button class="btn" onclick="approveNow()">CIN checked – let in</button>`;
-  if(action==='pick')btn=lastScan.matches.map((m,i)=>`<button class="btn" style="display:block;width:100%;margin-top:8px" onclick="pickMatch(${i})">${esc(m.ign&&m.ign!==m.name?m.ign+' – '+m.name:m.name)}${m.team?' · '+esc(m.team):''}${m.cin?' · '+esc(m.cin):''}${m.status==='approved'?' ✓':''}</button>`).join('')+(name?`<button class="btn" style="display:block;width:100%;margin-top:8px;opacity:.85" onclick="saveUnreg()">None of these</button>`:'');
+  if(action==='pick')btn=lastScan.matches.map((m,i)=>`<button class="btn" style="display:block;width:100%;margin-top:8px" onclick="pickMatch(${i})">${esc(m.ign&&m.ign!==m.name?m.ign+' – '+m.name:m.name)}${m.team?' · '+esc(m.team):''}${m.cin?' · '+esc(m.cin):''}${m.status==='approved'?' (invited)':''}</button>`).join('')+(name?`<button class="btn" style="display:block;width:100%;margin-top:8px;opacity:.85" onclick="saveUnreg()">None of these</button>`:'');
   $('resultBox').innerHTML=`<div class="result ${cls}"><div class="big">${esc(big)}</div>
     ${name?`<div class="nm">${esc(name)}</div>`:''}${tg&&(tg.team||tg.ign)?`<div class="nm" style="font-size:18px;opacity:.95">${esc(tg.team||'')}${tg.ign&&tg.ign!==name?(tg.team?' · ':'')+esc(tg.ign):''}</div>`:''}${cin?`<div class="cin">CIN: ${esc(cin)}</div>`:''}
     ${why?`<div class="why">${esc(why)}</div>`:''}${btn}</div>`;
@@ -841,7 +840,7 @@ async function approveNow(){
   const {data,error}=await sb.from('guests').update(upd).eq('id',lastScan.id).select().maybeSingle();
   if(error)return showResult('bad','NOT SAVED','',lastScan.cin||'',/guests_cin_key|duplicate/i.test(error.message)?'This CIN is already used by another player.':error.message);
   if(data)lastScan.g=data;
-  beep(true);showResult('ok','INVITED ✔',data?data.name:'',upd.cin||(data&&data.cin)||'','Invited and marked as entered.');
+  beep(true);showResult('ok','INVITED',data?data.name:'',upd.cin||(data&&data.cin)||'','Invited and marked as entered.');
 }
 async function pickMatch(i){const m=lastScan.matches[i];if(!m)return;lastScan.id=m.id;lastScan.g=m;if(m.status==='approved'&&!m.checked_in)return judge(m,lastScan.cin,lastScan.name);approveNow()}
 // someone not on our list: save them as "not registered", staff may still invite
