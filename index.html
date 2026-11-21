@@ -127,7 +127,7 @@
     <div class="card" id="gForm">
       <h2>Get your invitation QR</h2>
       <label for="iName">Full name (as on your CIN)</label><input id="iName" placeholder="Full name" autocomplete="name">
-      <label for="iIgn">IGN (your in-game name)</label><input id="iIgn" placeholder="e.g. 404hassib" autocomplete="off" autocapitalize="off">
+      <label for="iIgn">IGN (players only)</label><input id="iIgn" placeholder="Leave empty if you are not a player" autocomplete="off" autocapitalize="off">
       <label for="iCin">CIN</label><input id="iCin" placeholder="e.g. AB123456" autocomplete="off" style="text-transform:uppercase">
       <button class="btn wide" onclick="makeMyInvite()">Create my QR invitation</button>
       <div id="iMsg" class="muted" style="margin-top:8px"></div>
@@ -195,15 +195,19 @@
 
   <!-- STAFF: guest list -->
   <section id="v-guests" class="hidden">
+    <div class="seg" id="kindSeg" style="margin-bottom:12px">
+      <button class="btn sec" data-k="player" onclick="setKind('player')">Players</button>
+      <button class="btn ghost" data-k="guest" onclick="setKind('guest')">Guests</button>
+    </div>
     <div class="card">
-      <h2>Add players</h2>
+      <h2 id="addTitle">Add players</h2>
       <div class="seg">
-        <button class="btn ghost" id="modeOne" onclick="addMode('one')">One player</button>
+        <button class="btn ghost" id="modeOne" onclick="addMode('one')">One at a time</button>
         <button class="btn ghost" id="modeList" onclick="addMode('list')">Paste a list</button>
       </div>
       <div id="addOne">
-        <label for="aName">Full name (optional)</label><input id="aName" placeholder="Leave empty if you only have the IGN" autocomplete="off">
-        <div class="row">
+        <label for="aName" id="aNameLbl">Full name (optional)</label><input id="aName" placeholder="Leave empty if you only have the IGN" autocomplete="off">
+        <div class="row" id="playerFields">
           <div><label for="aTeam">Team</label><input id="aTeam" placeholder="Team name" autocomplete="off" list="teamList"></div>
           <div><label for="aIgn">IGN</label><input id="aIgn" placeholder="In-game name" autocomplete="off"></div>
         </div>
@@ -212,14 +216,14 @@
         <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;color:var(--navy)"><input type="checkbox" id="aApprove"> Invite now</label>
       </div>
       <div id="addList" class="hidden">
-        <label for="aBulk">One player per line: Team, IGN. You can paste 2 columns (Team, IGN) from Excel or Google Sheets.</label>
+        <label for="aBulk" id="aBulkLbl">One player per line: Team, IGN. You can paste 2 columns (Team, IGN) from Excel or Google Sheets.</label>
         <textarea id="aBulk" rows="7" placeholder="Team 404, 404hassib&#10;Team 404, 404SHAMANgo&#10;X TEAM, xTOXIN" style="width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-size:16px"></textarea>
       </div>
       <button class="btn wide" onclick="addPlayers()">Add to list</button>
       <div id="aMsg" class="muted" style="margin-top:8px"></div>
     </div>
     <div class="card">
-      <h2>Player list</h2>
+      <h2 id="listTitle">Player list</h2>
       <div class="stats">
         <div class="stat"><b id="sList">0</b><span class="muted">Pre-guests</span></div>
         <div class="stat"><b id="sApp">0</b><span class="muted">Invited</span></div>
@@ -234,8 +238,8 @@
       </div>
       <select id="teamF" onchange="renderList()" style="margin-bottom:8px"><option value="">All teams</option></select>
       <input id="search" placeholder="Search name, team, IGN or CIN" oninput="renderList()">
-      <button class="btn sec wide" style="margin-top:10px" onclick="zipQrs(this)">Download player QRs (zip)</button>
-      <div class="muted" style="margin-top:4px">Downloads a "player pass" for every player shown (use the team filter for one team).</div>
+      <button class="btn sec wide" style="margin-top:10px" onclick="zipQrs(this)" id="zipBtn">Download player QRs (zip)</button>
+      <div class="muted" style="margin-top:4px" id="zipNote">Downloads a pass for every player shown (use the team filter for one team).</div>
       <div id="list" style="margin-top:8px"><div class="muted">Loading…</div></div>
     </div>
   </section>
@@ -445,6 +449,22 @@ async function removeStaff(id,btn){
 let filter='all', editing=null;
 function addMode(m){$('addOne').classList.toggle('hidden',m!=='one');$('addList').classList.toggle('hidden',m!=='list');
   $('modeOne').className='btn '+(m==='one'?'sec':'ghost');$('modeList').className='btn '+(m==='list'?'sec':'ghost');addMode.m=m}
+let kind='player';
+const kindOf=g=>g.kind||'player';
+function setKind(k){kind=k;editing=null;
+  document.querySelectorAll('#kindSeg button').forEach(b=>b.className='btn '+(b.dataset.k===k?'sec':'ghost'));
+  const P=k==='player';
+  $('addTitle').textContent=P?'Add players':'Add guests';$('listTitle').textContent=P?'Player list':'Guest list';
+  $('playerFields').classList.toggle('hidden',!P);$('teamF').classList.toggle('hidden',!P);
+  $('aNameLbl').textContent=P?'Full name (optional)':'Full name';$('aName').placeholder=P?'Leave empty if you only have the IGN':'Full name';
+  $('aBulkLbl').textContent=P?'One player per line: Team, IGN. You can paste 2 columns (Team, IGN) from Excel or Google Sheets.':'One guest per line: Full name, CIN (CIN optional). You can paste 2 columns from Excel or Google Sheets.';
+  $('aBulk').placeholder=P?'Team 404, 404hassib\nTeam 404, 404SHAMANgo\nX TEAM, xTOXIN':'Sara Bennani\nKarim Alaoui, BK123456\nNadia El Fassi';
+  $('zipBtn').textContent=P?'Download player QRs (zip)':'Download guest QRs (zip)';
+  $('zipNote').textContent=P?'Downloads a pass for every player shown (use the team filter for one team).':'Downloads a pass for every guest shown.';
+  $('search').placeholder=P?'Search name, team, IGN or CIN':'Search name or CIN';
+  if(!P)$('teamF').value='';
+  renderList();
+}
 function setFilter(f){filter=f;document.querySelectorAll('#filters button').forEach(b=>b.className='btn '+(b.dataset.f===f?'sec':'ghost'));renderList()}
 async function loadGuests(){
   if(!sb||!me)return;
@@ -453,7 +473,7 @@ async function loadGuests(){
   guests={};data.forEach(g=>guests[g.id]=g);renderList();
 }
 function renderList(){
-  const all=Object.values(guests);
+  const all=Object.values(guests).filter(g=>kindOf(g)===kind);
   $('sList').textContent=all.filter(g=>g.status==='listed').length;
   $('sApp').textContent=all.filter(g=>g.status==='approved').length;
   $('sIn').textContent=all.filter(g=>g.checked_in).length;
@@ -464,7 +484,7 @@ function renderList(){
   const rows=all.filter(g=>(filter==='all'||(filter==='in'?g.checked_in:g.status===filter))&&(!team||g.team===team)&&
     (!q||(g.name_key||normName(g.name)).includes(q)||normName(g.team||'').includes(q)||normName(g.ign||'').includes(q)||(qc&&g.cin&&g.cin.includes(qc))))
     .sort((a,b)=>(a.team||'~').localeCompare(b.team||'~')||a.name.localeCompare(b.name));
-  if(!rows.length){$('list').innerHTML='<div class="muted">'+(all.length?'No match.':'No players yet. Add them above.')+'</div>';return}
+  if(!rows.length){$('list').innerHTML='<div class="muted">'+(all.length?'No match.':(kind==='player'?'No players yet. Add them above.':'No guests yet. Add them above.'))+'</div>';return}
   $('list').innerHTML=rows.slice(0,400).map(g=>{const id=esc(g.id);
     const pill=g.status==='approved'?'<span class="pill p-approved">invited</span>':g.status==='listed'?'<span class="pill p-listed">pre-guest</span>':'<span class="pill p-rejected">not registered</span>';
     return `<div class="guest" style="flex-wrap:wrap">
@@ -482,9 +502,10 @@ function renderList(){
 }
 const looksCin=v=>/^[A-Za-z]{1,2}\d{3,8}$/.test(String(v||'').trim());  // Moroccan CIN: 1-2 letters + digits
 function parseLines(txt){
-  // Team, IGN  (optional extras: , Full name , CIN)
+  // players: Team, IGN (optional: , Full name , CIN)   guests: Full name, CIN (CIN optional)
   return String(txt||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{
     const f=l.split(/[,;\t]/).map(x=>x.trim());
+    if(kind==='guest'){const c=f.length>=2&&looksCin(f[f.length-1])?normCin(f.pop()):null;return {name:cleanName(f.join(' ')),team:null,ign:null,cin:c}}
     let cin=null;if(f.length>=3&&looksCin(f[f.length-1]))cin=normCin(f.pop());
     const team=cleanName(f[0]||'')||null, ign=(f[1]||'').trim()||null, full=cleanName(f[2]||'');
     return {name:full||ign||'',team,ign,cin};
@@ -494,18 +515,19 @@ async function addPlayers(){
   let rows, approve=false;
   if(addMode.m==='list'){rows=parseLines($('aBulk').value)}
   else{const name=cleanName($('aName').value),cin=normCin($('aCin').value);
+    if(kind==='guest'&&name.length<2){flash('aMsg','Enter the full name.');return}
     if(name.length<2&&$('aIgn').value.trim().length<2){flash('aMsg','Enter an IGN or a full name.');return}
     if(cin&&(cin.length<4||cin.length>12)){flash('aMsg','CIN looks wrong.');return}
-    rows=[{name:name||$('aIgn').value.trim(),cin:cin||null,team:cleanName($('aTeam').value)||null,ign:$('aIgn').value.trim()||null}];approve=$('aApprove').checked}
+    rows=kind==='guest'?[{name,cin:cin||null,team:null,ign:null}]:[{name:name||$('aIgn').value.trim(),cin:cin||null,team:cleanName($('aTeam').value)||null,ign:$('aIgn').value.trim()||null}];approve=$('aApprove').checked}
   if(!rows.length){flash('aMsg','Nothing to add.');return}
   const existing=new Set(Object.values(guests).map(g=>g.name_key||normName(g.name)));
   const fresh=rows.filter(r=>{const k=normName(r.name);if(existing.has(k))return false;existing.add(k);return true});
   const skipped=rows.length-fresh.length;
   if(!fresh.length){flash('aMsg','Already on the list.');return}
   flash('aMsg','Adding '+fresh.length+'…');
-  const payload=fresh.map(r=>({name:r.name,name_key:normName(r.name),cin:r.cin,team:r.team,ign:r.ign,status:approve?'approved':'listed'}));
+  const payload=fresh.map(r=>({name:r.name,name_key:normName(r.name),cin:r.cin,team:r.team,ign:r.ign,kind,status:approve?'approved':'listed'}));
   const {error}=await sb.from('guests').insert(payload);
-  if(error){flash('aMsg',/guests_cin_key|duplicate/i.test(error.message)?'A CIN in your list is already used by another player.':'Could not save: '+error.message);return}
+  if(error){flash('aMsg',/guests_cin_key|duplicate/i.test(error.message)?'A CIN in your list is already used by someone on the list.':'Could not save: '+error.message);return}
   $('aName').value='';$('aCin').value='';$('aIgn').value='';$('aBulk').value='';$('aApprove').checked=false;
   flash('aMsg','Added '+fresh.length+(skipped?' · '+skipped+' already on the list':'')+'.');loadGuests();
 }
@@ -559,7 +581,7 @@ async function qrInvite(id,status){
   const q=regs.find(x=>x.id===id);if(!q)return;const g=guestFor(q);
   let error;
   if(g){({error}=await sb.from('guests').update(Object.assign({status},g.cin?{}:{cin:q.cin},g.name===g.ign?{name:q.name,name_key:normName(q.name)}:{})).eq('id',g.id))}
-  else{({error}=await sb.from('guests').insert({name:q.name,name_key:normName(q.name),cin:q.cin,ign:q.ign||null,status}))}
+  else{({error}=await sb.from('guests').insert({name:q.name,name_key:normName(q.name),cin:q.cin,ign:q.ign||null,kind:q.ign?'player':'guest',status}))}
   if(error)alert(/guests_cin_key|duplicate/i.test(error.message)?'This CIN is already used by another player on your list.':error.message);
   loadQrs();
 }
@@ -585,9 +607,8 @@ function makeMyInvite(){
   if(name.length<3){flash('iMsg','Enter your full name.');return}
   if(cin.length<4||cin.length>12){flash('iMsg','Enter a valid CIN (letters and numbers).');return}
   const ign=$('iIgn').value.trim().replace(/\|/g,'');
-  if(ign.length<2){flash('iMsg','Enter your IGN (in-game name).');return}
   // keep a record of this QR for the staff (players can only add, never read)
-  if(sb){try{sb.from('registrations').insert({cin,name,name_key:normName(name),ign}).then(()=>{},()=>{})}catch(e){}}
+  if(sb){try{sb.from('registrations').insert({cin,name,name_key:normName(name),ign:ign||null}).then(()=>{},()=>{})}catch(e){}}
   // 1) show the QR first, right away
   myCard=makeCard({name,cin,ign});
   const img=new Image();img.src=myCard.toDataURL('image/png');img.alt='Invitation QR for '+name;
@@ -709,7 +730,7 @@ function makePassCard(g){
   x.fillStyle=SKY;x.fillRect(0,0,W,250);
   x.textAlign='center';x.fillStyle='#fff';
   fitText(x,EVENT.name.toUpperCase(),W/2,150,W-100,92,'400',DISP);
-  x.font=`800 30px ${BODY}`;x.fillStyle=NAVY;x.fillText('PLAYER PASS',W/2,210);
+  x.font=`800 30px ${BODY}`;x.fillStyle=NAVY;x.fillText(kindOf(g)==='guest'?'GUEST PASS':'PLAYER PASS',W/2,210);
   const cell=Math.floor(700/(n+8)), qs=cell*(n+8), ox=(W-qs)/2, oy=300;
   x.fillStyle='#000';for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(qr.isDark(r,c))x.fillRect(ox+(c+4)*cell,oy+(r+4)*cell,cell,cell);
   let y=oy+qs+80;
@@ -738,7 +759,7 @@ async function sharePass(){
 async function zipQrs(btn){
   if(!window.JSZip){alert('Zip tool did not load. Check your connection and reload.');return}
   const team=$('teamF').value, q=normName($('search').value||'');
-  const rows=Object.values(guests).filter(g=>g.status!=='revoked'&&(!team||g.team===team)&&(!q||(g.name_key||normName(g.name)).includes(q)||normName(g.team||'').includes(q)||normName(g.ign||'').includes(q)));
+  const rows=Object.values(guests).filter(g=>kindOf(g)===kind&&g.status!=='revoked'&&(!team||g.team===team)&&(!q||(g.name_key||normName(g.name)).includes(q)||normName(g.team||'').includes(q)||normName(g.ign||'').includes(q)));
   if(!rows.length){alert('No players to export.');return}
   const old=btn.textContent;btn.disabled=true;
   try{await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,2000))])}catch(e){}
@@ -746,12 +767,12 @@ async function zipQrs(btn){
   for(let i=0;i<rows.length;i++){
     btn.textContent='Making '+(i+1)+' / '+rows.length+'…';
     const g=rows[i],cv=makePassCard(g);const b=await new Promise(r=>cv.toBlob(r,'image/png'));
-    zip.file(fileSafe(g.team||'No team')+'/'+fileSafe(g.ign||g.name)+'.png',b);
+    zip.file((kind==='guest'?'Guests':fileSafe(g.team||'No team'))+'/'+fileSafe(g.ign||g.name)+'.png',b);
     await new Promise(r=>setTimeout(r,0));
   }
   btn.textContent='Zipping…';
   const out=await zip.generateAsync({type:'blob'});
-  const url=URL.createObjectURL(out),a=document.createElement('a');a.href=url;a.download='player-passes'+(team?'-'+fileSafe(team):'')+'.zip';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),8000);
+  const url=URL.createObjectURL(out),a=document.createElement('a');a.href=url;a.download=(kind==='guest'?'guest-passes':'player-passes')+(team?'-'+fileSafe(team):'')+'.zip';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),8000);
   btn.textContent=old;btn.disabled=false;
 }
 // door: a player pass made by the organizer = ticket
@@ -768,7 +789,7 @@ async function verifyPass(id,label){
     if(g.checked_in){beep(false);return showResult('warn','ALREADY ENTERED',g.ign||g.name,g.cin||'','Entered '+fmtTime(g.checked_in_at)+(g.checked_in_by?' · by '+g.checked_in_by:'')+'.')}
     beep(true);
     const {error}=await sb.from('guests').update({status:'approved',checked_in:true,checked_in_at:nowIso(),checked_in_by:me.display_name}).eq('id',g.id);
-    showResult('ok','PLAYER – LET IN',g.ign||g.name,g.cin||'',error?'Valid pass, but entry was not saved.':'Welcome! Marked as entered.');
+    showResult('ok',kindOf(g)==='guest'?'GUEST – LET IN':'PLAYER – LET IN',g.ign||g.name,g.cin||'',error?'Valid pass, but entry was not saved.':'Welcome! Marked as entered.');
   }finally{setTimeout(()=>busy=false,1500)}
 }
 
@@ -826,7 +847,7 @@ function showResult(kind,big,name,cin,why,action){
   if(action==='enter')btn=`<button class="btn" onclick="approveNow()">CIN checked – let in</button>`;
   if(action==='pick')btn=lastScan.matches.map((m,i)=>`<button class="btn" style="display:block;width:100%;margin-top:8px" onclick="pickMatch(${i})">${esc(m.ign&&m.ign!==m.name?m.ign+' – '+m.name:m.name)}${m.team?' · '+esc(m.team):''}${m.cin?' · '+esc(m.cin):''}${m.status==='approved'?' (invited)':''}</button>`).join('')+(name?`<button class="btn" style="display:block;width:100%;margin-top:8px;opacity:.85" onclick="saveUnreg()">None of these</button>`:'');
   $('resultBox').innerHTML=`<div class="result ${cls}"><div class="big">${esc(big)}</div>
-    ${name?`<div class="nm">${esc(name)}</div>`:''}${tg&&(tg.team||tg.ign)?`<div class="nm" style="font-size:18px;opacity:.95">${esc(tg.team||'')}${tg.ign&&tg.ign!==name?(tg.team?' · ':'')+esc(tg.ign):''}</div>`:''}${cin?`<div class="cin">CIN: ${esc(cin)}</div>`:''}
+    ${name?`<div class="nm">${esc(name)}</div>`:''}${tg&&kindOf(tg)==='guest'?`<div class="nm" style="font-size:18px;opacity:.95">GUEST</div>`:''}${tg&&kindOf(tg)!=='guest'&&(tg.team||tg.ign)?`<div class="nm" style="font-size:18px;opacity:.95">${esc(tg.team||'')}${tg.ign&&tg.ign!==name?(tg.team?' · ':'')+esc(tg.ign):''}</div>`:''}${cin?`<div class="cin">CIN: ${esc(cin)}</div>`:''}
     ${why?`<div class="why">${esc(why)}</div>`:''}${btn}</div>`;
   window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -848,14 +869,14 @@ async function saveUnreg(){
   if(!lastScan||(!lastScan.name&&!lastScan.cin)){beep(false);return showResult('bad','NOT ON LIST','','','No player with this name or CIN.')}
   beep(false);
   if(!lastScan.name){return showResult('bad','NOT ON LIST','',lastScan.cin,'No player with this CIN.')}
-  const {data,error}=await sb.from('guests').insert({name:lastScan.name,name_key:normName(lastScan.name),cin:lastScan.cin||null,ign:lastScan.ign||null,status:'revoked'}).select().maybeSingle();
+  const {data,error}=await sb.from('guests').insert({name:lastScan.name,name_key:normName(lastScan.name),cin:lastScan.cin||null,ign:lastScan.ign||null,kind:lastScan.ign?'player':'guest',status:'revoked'}).select().maybeSingle();
   if(!error&&data)lastScan.id=data.id;
   showResult('bad','NOT REGISTERED',lastScan.name,lastScan.cin||'',error?'Not on your list.':'Not on your list – saved as not registered.',data?'approve':null);
 }
 
 /* =================== start =================== */
 (async function(){
-  applyEvent();addMode('one');setFilter('all');
+  applyEvent();addMode('one');setFilter('all');setKind('player');
   try{await loadMe()}catch(e){}
   route();
   if(sb)sb.auth.onAuthStateChange((ev)=>{if(ev==='SIGNED_OUT'){me=null;route()}});
