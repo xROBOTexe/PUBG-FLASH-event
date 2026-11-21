@@ -202,7 +202,7 @@
         <button class="btn ghost" id="modeList" onclick="addMode('list')">Paste a list</button>
       </div>
       <div id="addOne">
-        <label for="aName">Full name</label><input id="aName" placeholder="Full name" autocomplete="off">
+        <label for="aName">Full name (optional)</label><input id="aName" placeholder="Leave empty if you only have the IGN" autocomplete="off">
         <div class="row">
           <div><label for="aTeam">Team</label><input id="aTeam" placeholder="Team name" autocomplete="off" list="teamList"></div>
           <div><label for="aIgn">IGN</label><input id="aIgn" placeholder="In-game name" autocomplete="off"></div>
@@ -212,8 +212,8 @@
         <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;color:var(--navy)"><input type="checkbox" id="aApprove"> Invite now</label>
       </div>
       <div id="addList" class="hidden">
-        <label for="aBulk">One player per line: Full name, Team, IGN, CIN (CIN optional). You can paste rows from Excel or Google Sheets.</label>
-        <textarea id="aBulk" rows="7" placeholder="Ahmed Arif, Team Flash, FL4SH_Ahmed&#10;Youssef El Amrani, Team Flash, Yous, BE123456&#10;Sara Bennani, Desert Wolves, SaraB" style="width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-size:16px"></textarea>
+        <label for="aBulk">One player per line: Team, IGN. You can paste 2 columns (Team, IGN) from Excel or Google Sheets.</label>
+        <textarea id="aBulk" rows="7" placeholder="Team 404, 404hassib&#10;Team 404, 404SHAMANgo&#10;X TEAM, xTOXIN" style="width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-size:16px"></textarea>
       </div>
       <button class="btn wide" onclick="addPlayers()">Add to list</button>
       <div id="aMsg" class="muted" style="margin-top:8px"></div>
@@ -483,19 +483,21 @@ function renderList(){
 }
 const looksCin=v=>/^[A-Za-z]{1,2}\d{3,8}$/.test(String(v||'').trim());  // Moroccan CIN: 1-2 letters + digits
 function parseLines(txt){
+  // Team, IGN  (optional extras: , Full name , CIN)
   return String(txt||'').split(/\r?\n/).map(l=>l.trim()).filter(Boolean).map(l=>{
-    const f=l.split(/[,;\t]/).map(x=>x.trim());const name=cleanName(f[0]);const rest=f.slice(1).filter(x=>x!=='');
-    let cin=null;if((rest.length===1||rest.length>=3)&&looksCin(rest[rest.length-1]))cin=normCin(rest.pop());
-    return {name,cin,team:cleanName(rest[0]||'')||null,ign:(rest[1]||'').trim()||null}
+    const f=l.split(/[,;\t]/).map(x=>x.trim());
+    let cin=null;if(f.length>=3&&looksCin(f[f.length-1]))cin=normCin(f.pop());
+    const team=cleanName(f[0]||'')||null, ign=(f[1]||'').trim()||null, full=cleanName(f[2]||'');
+    return {name:full||ign||'',team,ign,cin};
   }).filter(r=>r.name.length>=2);
 }
 async function addPlayers(){
   let rows, approve=false;
   if(addMode.m==='list'){rows=parseLines($('aBulk').value)}
   else{const name=cleanName($('aName').value),cin=normCin($('aCin').value);
-    if(name.length<2){flash('aMsg','Enter a full name.');return}
+    if(name.length<2&&$('aIgn').value.trim().length<2){flash('aMsg','Enter an IGN or a full name.');return}
     if(cin&&(cin.length<4||cin.length>12)){flash('aMsg','CIN looks wrong.');return}
-    rows=[{name,cin:cin||null,team:cleanName($('aTeam').value)||null,ign:$('aIgn').value.trim()||null}];approve=$('aApprove').checked}
+    rows=[{name:name||$('aIgn').value.trim(),cin:cin||null,team:cleanName($('aTeam').value)||null,ign:$('aIgn').value.trim()||null}];approve=$('aApprove').checked}
   if(!rows.length){flash('aMsg','Nothing to add.');return}
   const existing=new Set(Object.values(guests).map(g=>g.name_key||normName(g.name)));
   const fresh=rows.filter(r=>{const k=normName(r.name);if(existing.has(k))return false;existing.add(k);return true});
