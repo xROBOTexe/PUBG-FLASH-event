@@ -13,7 +13,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{--sky:#3fc0f2;--sky2:#8fdcfb;--sky3:#d9f3fd;--navy:#16253f;--ink:#16253f;--mute:#5d6b80;--line:#d5e6f0;--white:#fff;--ok:#12a150;--bad:#e5383b;--warn:#f0a500;
-    --disp:'Hard Race','Racing Sans One',Impact,sans-serif;--body:Outfit,system-ui,sans-serif}
+    --disp:'Racing Sans One',Impact,sans-serif;--body:Outfit,system-ui,sans-serif}
   *{box-sizing:border-box}
   body{margin:0;font-family:var(--body);color:var(--ink);min-height:100vh;
     background:linear-gradient(180deg,#e9f8ff 0%,#bfe9fc 45%,#5ccaf4 100%) fixed}
@@ -628,7 +628,7 @@ async function shareCard(){
     if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:EVENT.name});else saveCard()}catch(e){}
 }
 
-const DISP='"Hard Race","Racing Sans One", Impact, sans-serif', BODY='Outfit, system-ui, sans-serif', SKY='#3fc0f2', NAVY='#16253f';
+const DISP='"Racing Sans One", Impact, sans-serif', BODY='Outfit, system-ui, sans-serif', SKY='#3fc0f2', NAVY='#16253f';
 function makeCard(g){
   const qr=qrcode(0,'M'); qrcode.stringToBytes=qrcode.stringToBytesFuncs['UTF-8']; qr.addData(['INV3',g.cin,g.name,g.ign||''].join('|')); qr.make();
   const n=qr.getModuleCount(), W=1080, H=1490, cv=document.createElement('canvas'); cv.width=W; cv.height=H;
