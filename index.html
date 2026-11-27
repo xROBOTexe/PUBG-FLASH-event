@@ -118,6 +118,7 @@
   .linkbtn{background:none;border:0;color:var(--navy);font-weight:700;text-decoration:underline;cursor:pointer;font-family:var(--body);font-size:13px;padding:0}
   select{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-weight:600;font-size:16px}
   /* ===== polish: motion, focus, hover, desktop ===== */
+  .closed{border-left:6px solid var(--sky);text-align:left}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
   header{padding-top:max(10px,env(safe-area-inset-top))}
@@ -185,6 +186,11 @@
       <div class="meta" id="gMeta"></div><br>
       <a class="map" id="mapLink" target="_blank" rel="noopener">Open in Google Maps<span class="sr-only"> (opens in a new tab)</span></a>
     </div>
+    <div class="card hidden closed" id="gClosed">
+      <h2 id="gClosedT"></h2>
+      <p class="muted" id="gClosedP" style="margin:0"></p>
+      <a class="btn wide" id="gClosedIg" target="_blank" rel="noopener" style="text-decoration:none;display:block">Follow us on Instagram</a>
+    </div>
     <div class="card" id="gForm">
       <h2>Get your invitation QR</h2>
       <label for="iName">Full name (as on your CIN)</label><input id="iName" placeholder="Full name" autocomplete="name">
@@ -236,8 +242,12 @@
 
   <!-- STAFF: scan -->
   <section id="v-scan" class="hidden">
+    <div class="card hidden closed" id="scanClosed">
+      <h2>Scanning is off</h2>
+      <p class="muted" style="margin:0">The event is closed, so door check-in is paused. Your player and guest lists are still in the Guests tab. To scan again for the next event, set <b>EVENT_OPEN = true</b> at the top of the settings in index.html.</p>
+    </div>
     <div id="resultBox" aria-live="assertive"></div>
-    <div class="card">
+    <div class="card scanCard">
       <h2>Scan guest QR</h2>
       <video id="video" class="hidden" playsinline muted></video>
       <canvas id="scanCanvas" class="hidden"></canvas>
@@ -248,7 +258,7 @@
       <input type="file" id="photoIn" accept="image/*" capture="environment" class="hidden" onchange="scanPhoto(this)">
       <p class="muted" id="scanHint">Point the camera at the guest's QR. If the camera is blocked, use Photo scan.</p>
     </div>
-    <div class="card">
+    <div class="card scanCard">
       <h2>Check by CIN or name</h2>
       <div class="row"><input id="manCin" placeholder="CIN or full name"><button class="btn ghost" style="flex:0 0 auto" onclick="manualCheck()">Check</button></div>
     </div>
@@ -376,6 +386,12 @@ const EVENT = {
   place: 'PlayerZ Gaming Arena (near Wydad Store), Casablanca',
   map:   'https://www.google.com/maps/search/?api=1&query=PlayerZ+Gaming+Arena+Casablanca'
 };
+// EVENT ON/OFF SWITCH
+//   false = event closed: no new invitations and no door scanning. Lists and data stay as they are.
+//   true  = event open: guests can make QRs and staff can scan.
+const EVENT_OPEN   = false;
+const CLOSED_TITLE = 'See you at the next event';
+const CLOSED_TEXT  = 'Invitations and door check-in are closed until the next PUBG MOBILE offline event in Morocco. Follow us on Instagram for the date.';
 const LOGIN_DOMAIN = 'staff.pmmc-flash.app';  // internal only: turns "Full Name" into a login id
 /* ============================================================= */
 
@@ -405,6 +421,14 @@ function applyEvent(){
   $('gMeta').innerHTML='<span class="d">'+esc(EVENT.date)+'</span><br>'+esc(EVENT.place);
   $('mapLink').href=EVENT.map;
   document.title=EVENT.name+' – Invitation';
+  if(!EVENT_OPEN){
+    $('gForm').classList.add('hidden');$('gClosed').classList.remove('hidden');
+    $('gClosedT').textContent=CLOSED_TITLE;$('gClosedP').textContent=CLOSED_TEXT;
+    $('gClosedIg').classList.toggle('hidden',!INSTAGRAM_URL);if(INSTAGRAM_URL)$('gClosedIg').href=INSTAGRAM_URL;
+    $('gMeta').innerHTML='<span class="d">Next offline event: coming soon</span><br>Thank you to everyone who came to '+esc(EVENT.place.split(',')[0]);
+    $('mapLink').classList.add('hidden');
+    $('scanClosed').classList.remove('hidden');document.querySelectorAll('.scanCard').forEach(c=>c.classList.add('hidden'));
+  }
 }
 
 /* =================== routing =================== */
@@ -432,7 +456,7 @@ function route(){
   if(v==='guests')loadGuests();
   if(v==='team')loadTeam();
   if(v==='qrs')loadQrs();
-  if(v==='scan'&&!stream&&canLive())toggleLive();
+  if(v==='scan'&&EVENT_OPEN&&!stream&&canLive())toggleLive();
   clearInterval(pollTimer);
   if(v==='guests')pollTimer=setInterval(loadGuests,10000);
   if(v==='qrs')pollTimer=setInterval(loadQrs,15000);
@@ -664,6 +688,7 @@ function igAppLink(){
 let fontsReady=false;
 try{Promise.all([document.fonts.load('400 80px "Racing Sans One"'),document.fonts.load('700 30px Outfit')]).then(()=>fontsReady=true,()=>{})}catch(e){}
 function makeMyInvite(){
+  if(!EVENT_OPEN)return;
   const name=cleanName($('iName').value), cin=normCin($('iCin').value);
   if(name.length<3){flash('iMsg','Enter your full name.');return}
   if(cin.length<4||cin.length>12){flash('iMsg','Enter a valid CIN (letters and numbers).');return}
@@ -742,6 +767,7 @@ let stream=null, rafId=null, lastHit={t:0,v:''}, lastScan=null, busy=false;
 const canLive=()=>!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
 async function toggleLive(){
   if(stream){stopLive();return}
+  if(!EVENT_OPEN)return;
   try{
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
     const v=$('video');v.srcObject=stream;v.classList.remove('hidden');await v.play();
@@ -761,6 +787,7 @@ function loop(){
   rafId=requestAnimationFrame(loop);
 }
 function scanPhoto(inp){
+  if(!EVENT_OPEN){inp.value='';return}
   const f=inp.files&&inp.files[0];inp.value='';if(!f)return;
   const img=new Image(),url=URL.createObjectURL(f);
   img.onload=()=>{
@@ -861,6 +888,7 @@ function handleCode(text){
   verify(normCin(p[1]),cleanName(p[2]),(p[3]||'').trim()||null);
 }
 function manualCheck(){
+  if(!EVENT_OPEN)return;
   const v=$('manCin').value.trim();if(!v)return;$('manCin').value='';
   if(/^[A-Za-z]{1,2}\d{3,8}$/.test(v))verify(normCin(v),null,null);else verify(null,cleanName(v),v);
 }

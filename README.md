@@ -33,6 +33,8 @@ Edit the **SETTINGS** block at the top of the `<script>` in `index.html`:
 | `SUPABASE_URL`, `SUPABASE_ANON_KEY` | Your Supabase project (Project Settings > API). The anon key is public by design; the data is protected by Supabase row level security. |
 | `INSTAGRAM_URL` | Post opened after a guest makes their QR |
 | `EVENT` | Name, date, place and Google Maps link |
+| `EVENT_OPEN` | On/off switch. `false` closes the event: the public page shows "See you at the next event" and staff scanning is off. Lists and data are kept. Set to `true` for the next event. |
+| `CLOSED_TITLE`, `CLOSED_TEXT` | Message guests see while the event is closed |
 
 If the event name, date or place changes, also update the `description`, `og:` and `twitter:` tags in `<head>` and the social preview image `assets/og-image.jpg`.
 
