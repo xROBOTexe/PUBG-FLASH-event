@@ -119,6 +119,9 @@
   select{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-weight:600;font-size:16px}
   /* ===== polish: motion, focus, hover, desktop ===== */
   .closed{border-left:6px solid var(--sky);text-align:left}
+  .scan-off{text-align:center;max-width:340px;margin:calc(50vh - 150px) auto 0;padding:26px 18px}
+  .scan-off h2{font-size:22px;margin:0}
+  .scan-off p{margin:6px 0 0;font-size:14px}
   .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
   html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
   header{padding-top:max(10px,env(safe-area-inset-top))}
@@ -242,9 +245,9 @@
 
   <!-- STAFF: scan -->
   <section id="v-scan" class="hidden">
-    <div class="card hidden closed" id="scanClosed">
+    <div class="card hidden scan-off" id="scanClosed">
       <h2>Scanning is off</h2>
-      <p class="muted" style="margin:0">The event is closed, so door check-in is paused. Your player and guest lists are still in the Guests tab. To scan again for the next event, set <b>EVENT_OPEN = true</b> at the top of the settings in index.html.</p>
+      <p class="muted">Thank you to all the staff.</p>
     </div>
     <div id="resultBox" aria-live="assertive"></div>
     <div class="card scanCard">
