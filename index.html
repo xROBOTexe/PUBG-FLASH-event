@@ -5,11 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#3fc0f2">
 <title>PUBG MOBILE FLASH CÉLÉBRATION – Invitation</title>
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<meta name="description" content="Get your QR invitation for PUBG MOBILE FLASH CÉLÉBRATION at PlayerZ Gaming Arena, Casablanca. Show it at the entrance with your CIN.">
+<link rel="canonical" href="https://xrobotexe.github.io/PUBG-FLASH-event/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2316253f'/%3E%3Cpath d='M38 6 L14 36 H30 L24 58 L50 26 H34Z' fill='%233fc0f2'/%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="PUBG MOBILE FLASH CÉLÉBRATION">
+<meta property="og:title" content="PUBG MOBILE FLASH CÉLÉBRATION – Get your invitation">
+<meta property="og:description" content="Get your QR invitation for PUBG MOBILE FLASH CÉLÉBRATION at PlayerZ Gaming Arena, Casablanca. Show it at the entrance with your CIN.">
+<meta property="og:url" content="https://xrobotexe.github.io/PUBG-FLASH-event/">
+<meta property="og:image" content="https://xrobotexe.github.io/PUBG-FLASH-event/assets/og-image.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="fr_FR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="PUBG MOBILE FLASH CÉLÉBRATION – Get your invitation">
+<meta name="twitter:description" content="Get your QR invitation for PUBG MOBILE FLASH CÉLÉBRATION at PlayerZ Gaming Arena, Casablanca. Show it at the entrance with your CIN.">
+<meta name="twitter:image" content="https://xrobotexe.github.io/PUBG-FLASH-event/assets/og-image.jpg">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Racing+Sans+One&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root{--sky:#3fc0f2;--sky2:#8fdcfb;--sky3:#d9f3fd;--navy:#16253f;--ink:#16253f;--mute:#5d6b80;--line:#d5e6f0;--white:#fff;--ok:#12a150;--bad:#e5383b;--warn:#f0a500;
@@ -90,7 +109,7 @@
   .pop .btn{width:100%;margin-top:16px;text-decoration:none}
   .seg{display:flex;gap:6px;margin-bottom:10px}
   .seg{flex-wrap:wrap}.seg button{flex:1 1 18%;min-width:0;padding:10px 4px;font-size:12px;letter-spacing:.2px}
-  #list .guest,#teamList .guest{flex-wrap:wrap}
+  #list .guest,#staffList .guest{flex-wrap:wrap}
   #list .who b{white-space:normal}
   #list .act{width:100%;justify-content:flex-end;flex-wrap:wrap}
   html,body{overflow-x:hidden}
@@ -98,31 +117,73 @@
   .who-bar b{color:var(--navy)}
   .linkbtn{background:none;border:0;color:var(--navy);font-weight:700;text-decoration:underline;cursor:pointer;font-family:var(--body);font-size:13px;padding:0}
   select{width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-weight:600;font-size:16px}
+  /* ===== polish: motion, focus, hover, desktop ===== */
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth}
+  header{padding-top:max(10px,env(safe-area-inset-top))}
+  header>h1,header>.tabs,header>.who-bar{max-width:612px;margin-inline:auto}
+  .btn,.tabs button{transition:transform .15s ease,box-shadow .2s ease,background-color .2s ease,filter .2s ease}
+  @media (hover:hover){
+    .btn:hover{filter:brightness(1.06);transform:translateY(-1px);box-shadow:0 10px 22px rgba(63,192,242,.42)}
+    .btn.sec:hover,.btn.ghost:hover,.btn.red:hover{box-shadow:0 6px 14px rgba(22,37,63,.14)}
+    .tabs button:not(.on):hover{background:#dff0fa;color:var(--navy)}
+    .foot a:hover,.hero .map:hover{opacity:1;color:var(--sky)}
+  }
+  .btn:active{transform:translateY(1px) scale(.99)}
+  :focus-visible{outline:3px solid var(--navy);outline-offset:2px}
+  input:focus-visible,select:focus-visible,textarea:focus-visible{outline:0;box-shadow:0 0 0 4px rgba(63,192,242,.25)}
+  textarea:focus{border-color:var(--sky)!important;background:#fff!important;outline:none}
+  .card{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  main section>.card:nth-child(2){animation-delay:.06s}
+  main section>.card:nth-child(3){animation-delay:.12s}
+  .hero .t1{animation:slideIn .6s cubic-bezier(.2,.8,.2,1) .05s both}
+  .hero .t2{animation:punch .7s cubic-bezier(.2,1.4,.4,1) .15s both}
+  .hero .ribbon{animation:slideIn .6s cubic-bezier(.2,.8,.2,1) .35s both}
+  .hero .meta,.hero .map{animation:rise .6s cubic-bezier(.2,.8,.2,1) .45s both}
+  .hero::before{animation:bolt 6s ease-in-out infinite alternate}
+  .hero .shine{position:absolute;inset:0;z-index:2;pointer-events:none;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.55) 50%,transparent 60%);background-size:250% 100%;animation:shine 5s ease-in-out 1s infinite}
+  .result{animation:punch .35s cubic-bezier(.2,1.4,.4,1) both}
+  .pop .box{animation:rise .3s cubic-bezier(.2,.8,.2,1) both}
+  .inv img{animation:rise .5s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+  @keyframes slideIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:none}}
+  @keyframes punch{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+  @keyframes bolt{from{transform:translateX(0)}to{transform:translateX(3%)}}
+  @keyframes shine{0%{background-position:150% 0}35%,100%{background-position:-50% 0}}
+  @media (min-width:700px){
+    main{padding:24px 14px}
+    .hero{padding:44px 24px 30px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+  }
 </style>
 </head>
 <body>
+<noscript><p style="margin:0;padding:12px;background:#fff4d6;color:#16253f;text-align:center;font-weight:700">Please turn on JavaScript to get your invitation QR.</p></noscript>
 <header>
   <h1 id="evTitle"></h1>
-  <div class="tabs hidden" id="tabs">
+  <nav class="tabs hidden" id="tabs" aria-label="Staff sections">
     <button data-v="scan" onclick="go('scan')">Scan</button>
     <button data-v="guests" onclick="go('guests')">Guests</button>
     <button data-v="qrs" onclick="go('qrs')">QRs</button>
     <button data-v="team" onclick="go('team')" id="tabTeam">Staff</button>
-  </div>
+  </nav>
   <div class="who-bar hidden" id="whoBar"><span>Signed in: <b id="whoName"></b> <span id="whoRole"></span></span><button class="linkbtn" onclick="logout()">Log out</button></div>
 </header>
 
 <main>
-  <div id="note" class="note hidden"></div>
+  <div id="note" class="note hidden" role="alert"></div>
 
   <!-- PLAYER: create own invitation (public) -->
   <section id="v-invite" class="hidden">
     <div class="card hero">
+      <div class="shine" aria-hidden="true"></div>
       <div class="t1" id="gT1"></div>
       <div class="t2" id="gT2"></div>
       <div class="ribbon" id="gRib"><span id="gT3"></span></div><br>
       <div class="meta" id="gMeta"></div><br>
-      <a class="map" id="mapLink" target="_blank" rel="noopener">Open in Google Maps</a>
+      <a class="map" id="mapLink" target="_blank" rel="noopener">Open in Google Maps<span class="sr-only"> (opens in a new tab)</span></a>
     </div>
     <div class="card" id="gForm">
       <h2>Get your invitation QR</h2>
@@ -130,7 +191,7 @@
       <label for="iIgn">IGN (players only)</label><input id="iIgn" placeholder="Leave empty if you are not a player" autocomplete="off" autocapitalize="off">
       <label for="iCin">CIN</label><input id="iCin" placeholder="e.g. AB123456" autocomplete="off" style="text-transform:uppercase">
       <button class="btn wide" onclick="makeMyInvite()">Create my QR invitation</button>
-      <div id="iMsg" class="muted" style="margin-top:8px"></div>
+      <div id="iMsg" role="status" aria-live="polite" class="muted" style="margin-top:8px"></div>
     </div>
     <div class="card hidden" id="gResult">
       <div class="inv" id="myInv"></div>
@@ -156,7 +217,7 @@
       <label for="lName">Full name</label><input id="lName" placeholder="Your full name" autocomplete="username">
       <label for="lPass">Password</label><input id="lPass" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')login()">
       <button class="btn wide" onclick="login()">Log in</button>
-      <div id="lMsg" class="muted" style="margin-top:8px"></div>
+      <div id="lMsg" role="status" aria-live="polite" class="muted" style="margin-top:8px"></div>
     </div>
     <div class="foot"><a href="#">Back to invitation page</a></div>
   </section>
@@ -169,13 +230,13 @@
       <label for="sName">Your full name</label><input id="sName" placeholder="Full name">
       <label for="sPass">Choose a password (8+ characters)</label><input id="sPass" type="password" autocomplete="new-password">
       <button class="btn wide" onclick="setupAdmin()">Create organizer</button>
-      <div id="sMsg" class="muted" style="margin-top:8px"></div>
+      <div id="sMsg" role="status" aria-live="polite" class="muted" style="margin-top:8px"></div>
     </div>
   </section>
 
   <!-- STAFF: scan -->
   <section id="v-scan" class="hidden">
-    <div id="resultBox"></div>
+    <div id="resultBox" aria-live="assertive"></div>
     <div class="card">
       <h2>Scan guest QR</h2>
       <video id="video" class="hidden" playsinline muted></video>
@@ -220,7 +281,7 @@
         <textarea id="aBulk" rows="7" placeholder="Team 404, 404hassib&#10;Team 404, 404SHAMANgo&#10;X TEAM, xTOXIN" style="width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:#f7fbfe;color:var(--navy);font-family:var(--body);font-size:16px"></textarea>
       </div>
       <button class="btn wide" onclick="addPlayers()">Add to list</button>
-      <div id="aMsg" class="muted" style="margin-top:8px"></div>
+      <div id="aMsg" role="status" aria-live="polite" class="muted" style="margin-top:8px"></div>
     </div>
     <div class="card">
       <h2 id="listTitle">Player list</h2>
@@ -273,17 +334,17 @@
       <label for="tRole">Role</label>
       <select id="tRole"><option value="staff">Staff — scan and approve guests</option><option value="admin">Organizer — also manages staff</option></select>
       <button class="btn wide" onclick="addStaff()">Create staff account</button>
-      <div id="tMsg" class="muted" style="margin-top:8px"></div>
+      <div id="tMsg" role="status" aria-live="polite" class="muted" style="margin-top:8px"></div>
     </div>
     <div class="card">
       <h2>Staff accounts</h2>
-      <div id="teamList"><div class="muted">Loading…</div></div>
+      <div id="staffList"><div class="muted">Loading…</div></div>
     </div>
   </section>
 </main>
 
 <div class="pop hidden" id="passPop" onclick="if(event.target===this)closePass()">
-  <div class="box" style="max-width:420px">
+  <div class="box" style="max-width:420px" role="dialog" aria-modal="true" aria-label="Player pass">
     <button class="x" onclick="closePass()" aria-label="Close">Close</button>
     <div id="passImg" class="inv"></div>
     <div class="row" style="margin-top:12px">
@@ -295,9 +356,9 @@
 </div>
 
 <div class="pop hidden" id="followPop" onclick="if(event.target===this)closeIg()">
-  <div class="box">
+  <div class="box" role="dialog" aria-modal="true" aria-labelledby="followTitle">
     <button class="x" onclick="closeIg()" aria-label="Close">Close</button>
-    <h3>FOLLOW US ON <b>INSTAGRAM</b></h3>
+    <h3 id="followTitle">FOLLOW US ON <b>INSTAGRAM</b></h3>
     <div class="muted">Live updates, results and photos from the event.</div>
     <a class="btn" id="fLink" href="#" target="_blank" rel="noopener" onclick="closeIg()">Open the post</a>
     <div class="muted" id="fHandle" style="margin-top:8px"></div>
@@ -364,7 +425,7 @@ function route(){
   $('tabs').classList.toggle('hidden',!staffMode);
   $('whoBar').classList.toggle('hidden',!staffMode);
   $('tabTeam').classList.toggle('hidden',!(me&&me.role==='admin'));
-  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  document.querySelectorAll('#tabs button').forEach(b=>{const on=b.dataset.v===v;b.classList.toggle('on',on);on?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current')});
   if(v!=='invite')closeIg();
   if(v!=='guests')closePass();
   if(v!=='scan')stopLive();
@@ -434,8 +495,8 @@ async function addStaff(){
 async function loadTeam(){
   if(!sb||!me)return;
   const {data,error}=await sb.from('staff').select('*').order('created_at');
-  if(error){$('teamList').innerHTML='<div class="muted">Could not load staff.</div>';return}
-  $('teamList').innerHTML=data.map(s=>`<div class="guest"><div class="who"><b>${esc(s.display_name)}</b><span class="muted">${s.role==='admin'?'Organizer':'Staff'}</span></div>
+  if(error){$('staffList').innerHTML='<div class="muted">Could not load staff.</div>';return}
+  $('staffList').innerHTML=data.map(s=>`<div class="guest"><div class="who"><b>${esc(s.display_name)}</b><span class="muted">${s.role==='admin'?'Organizer':'Staff'}</span></div>
     ${s.user_id===me.user_id?'<span class="pill p-approved">you</span>':`<div class="act"><button class="btn red" onclick="removeStaff('${esc(s.user_id)}',this)">Remove</button></div>`}</div>`).join('')||'<div class="muted">No staff yet.</div>';
 }
 async function removeStaff(id,btn){
@@ -874,6 +935,7 @@ async function saveUnreg(){
   showResult('bad','NOT REGISTERED',lastScan.name,lastScan.cin||'',error?'Not on your list.':'Not on your list – saved as not registered.',data?'approve':null);
 }
 
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeIg();closePass()}});
 /* =================== start =================== */
 (async function(){
   applyEvent();addMode('one');setFilter('all');setKind('player');
